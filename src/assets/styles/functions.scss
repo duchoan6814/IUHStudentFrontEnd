@@ -1,0 +1,10 @@
+@use "sass:math";
+
+@function calc-to-rem($size: null) {
+  @if $size {
+    $val: math.div($size, 16) * 1rem;
+    @return $val;
+  } @else {
+    @return 0;
+  }
+}
