@@ -1,16 +1,27 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { ApolloProvider } from "@apollo/client";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import client from "core/apollo";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import { LoginPage as Login, HomePage } from "pages";
 
 ReactDOM.render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <App />
+      <Router>
+        <Switch>
+          <Route exact path="/">
+            <HomePage />
+          </Route>
+          <Route path="/login">
+            <Login />
+          </Route>
+        </Switch>
+      </Router>
     </ApolloProvider>
   </React.StrictMode>,
   document.getElementById("root")
