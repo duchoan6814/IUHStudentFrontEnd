@@ -1,9 +1,7 @@
 import { ApolloClient, InMemoryCache, ApolloLink, split } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { from, HttpLink } from "@apollo/client/core";
+import { from } from "@apollo/client/core";
 import { onError } from "@apollo/client/link/error";
-import { createUploadLink } from "apollo-upload-client";
-import { getMainDefinition } from "apollo-utilities";
 
 import { clientCache } from "helpers";
 import config from "config";

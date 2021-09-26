@@ -5,7 +5,6 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import client from "core/apollo";
 import "./index.css";
-import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { LoginPage as Login, HomePage } from "pages";
 
