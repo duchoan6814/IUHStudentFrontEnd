@@ -4,9 +4,12 @@ import { ApolloProvider } from "@apollo/client";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import client from "core/apollo";
-import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import { LoginPage as Login, HomePage } from "pages";
+
+import "./index.css";
+import "assets/styles/main.scss";
+import "antd/dist/antd.css";
 
 ReactDOM.render(
   <React.StrictMode>

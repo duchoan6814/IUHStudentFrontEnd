@@ -95,40 +95,9 @@ class ClientCache {
   setAuthenTokenWithCookie(tokenData) {
     if (typeof window === "undefined") return;
 
-    const CookiesPlus = Cookies.withConverter({
-      write: (value) => {
-        return value;
-      },
-    });
+    const { id_token } = tokenData;
 
-    /**
-     * - Setting shared cookies for subdomain
-     *  + Not shared when stay at localhost
-     *  + Not yet shared when stay production
-     */
-    const domainConfig =
-      !config.IS_LOCAL && config.IS_DEV
-        ? {
-            domain: ".data-advising.net",
-            path: "/",
-          }
-        : config.IS_PROD
-        ? { domain: ".damsanx.com", path: "/" }
-        : { domain: "", path: "/" };
-
-    const { id_token, refresh_token } = tokenData;
-
-    CookiesPlus.set(this.AUTHORIZATION, `Bearer ${id_token?.token}`, {
-      ...domainConfig,
-    });
-
-    Cookies.set(this.TOKEN_KEY, id_token.token, { ...domainConfig });
-    Cookies.set(this.REFRESH_TOKEN_KEY, refresh_token.token, {
-      ...domainConfig,
-    });
-    Cookies.set(this.TOKEN_EXPIRED_KEY, id_token.expired_time, {
-      ...domainConfig,
-    });
+    Cookies.set(this.TOKEN_KEY, id_token);
   }
 
   setDefaultFirstChapterWithLocalStorage(status) {
