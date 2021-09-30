@@ -1,181 +1,182 @@
-import React from "react";
-import { Table } from 'antd';
-import { Button } from 'antd';
-import { Select } from 'antd';
+import React, { useState } from "react";
+import { Table, Button, Select, Modal } from "antd";
 
-import './SinhVien.scss';
-
+import ModalAddSinhVien from "./FormAddStudent";
+import "./SinhVien.scss";
 
 const columns = [
   {
-    title: 'ID',
+    title: "ID",
     width: 50,
 
-    dataIndex: 'id',
-    key: 'id',
-    fixed: 'left',
+    dataIndex: "id",
+    key: "id",
+    fixed: "left",
   },
   {
-    title: 'MSSV',
+    title: "MSSV",
     width: 100,
-    dataIndex: 'mssv',
-    key: 'mssv',
-    fixed: 'left',
+    dataIndex: "mssv",
+    key: "mssv",
+    fixed: "left",
   },
   {
-    title: 'Họ tên',
+    title: "Họ tên",
     width: 250,
 
-    dataIndex: 'name',
-    key: 'name',
-    fixed: 'left',
+    dataIndex: "name",
+    key: "name",
+    fixed: "left",
   },
 
   {
-    title: 'Số điện thoại',
-    dataIndex: 'sdt',
-    key: 'sdt',
-    width: 150,
-
-  },
-  {
-    title: 'CMND',
-    dataIndex: 'cmnd',
-    key: 'cmnd',
-
+    title: "Số điện thoại",
+    dataIndex: "sdt",
+    key: "sdt",
     width: 150,
   },
   {
-    title: 'Khoa',
-    dataIndex: 'khoa',
-    key: 'khoa',
+    title: "CMND",
+    dataIndex: "cmnd",
+    key: "cmnd",
+
+    width: 150,
+  },
+  {
+    title: "Khoa",
+    dataIndex: "khoa",
+    key: "khoa",
 
     width: 200,
   },
   {
-    title: 'Chuyên ngành',
-    dataIndex: 'chuyenNganh',
-    key: 'chuyenNganh',
+    title: "Chuyên ngành",
+    dataIndex: "chuyenNganh",
+    key: "chuyenNganh",
 
     width: 230,
   },
   {
-    title: 'Bậc đào tạo',
-    dataIndex: 'bacDaoTao',
-    key: 'bacDaoTao',
+    title: "Bậc đào tạo",
+    dataIndex: "bacDaoTao",
+    key: "bacDaoTao",
 
     width: 150,
   },
   {
-    title: 'Khóa học',
-    dataIndex: 'khoaHoc',
-    key: 'khoahoc',
+    title: "Khóa học",
+    dataIndex: "khoaHoc",
+    key: "khoahoc",
     width: 150,
   },
   {
-    title: 'Email',
-    dataIndex: 'email',
-    key: 'email',
+    title: "Email",
+    dataIndex: "email",
+    key: "email",
 
     width: 200,
   },
   {
-    title: 'Mã hồ sơ',
-    dataIndex: 'mahs',
-    key: 'mahs',
+    title: "Mã hồ sơ",
+    dataIndex: "mahs",
+    key: "mahs",
 
     width: 100,
   },
   {
-    title: 'Ngày sinh',
-    dataIndex: 'ngaySinh',
-    key: 'ngaySinh',
+    title: "Ngày sinh",
+    dataIndex: "ngaySinh",
+    key: "ngaySinh",
 
     width: 100,
   },
   {
-    title: 'Ngày vào trường',
-    dataIndex: 'ngayVaoTruong',
-    key: 'ngayVaoTruong',
+    title: "Ngày vào trường",
+    dataIndex: "ngayVaoTruong",
+    key: "ngayVaoTruong",
 
     width: 150,
   },
   {
-    title: 'Ngày vào đoàn',
-    dataIndex: 'ngayVaoDoan',
-    key: 'ngayVaoDoan',
+    title: "Ngày vào đoàn",
+    dataIndex: "ngayVaoDoan",
+    key: "ngayVaoDoan",
 
     width: 150,
   },
   {
-    title: 'Ngày vào Đảng',
-    dataIndex: 'ngayVaoDang',
-    key: 'ngayVaoDang',
+    title: "Ngày vào Đảng",
+    dataIndex: "ngayVaoDang",
+    key: "ngayVaoDang",
 
     width: 150,
   },
   {
-    title: 'Mã khu vực',
-    dataIndex: 'maKhuVuc',
-    key: 'maKhuVuc',
+    title: "Mã khu vực",
+    dataIndex: "maKhuVuc",
+    key: "maKhuVuc",
 
     width: 120,
   },
   {
-    title: 'Địa chỉ liên hệ',
-    dataIndex: 'diaChilh',
-    key: 'diaChilh',
+    title: "Địa chỉ liên hệ",
+    dataIndex: "diaChilh",
+    key: "diaChilh",
 
     width: 500,
   },
   {
-    title: 'Hộ khẩu thường trú',
-    dataIndex: 'hoKhau',
-    key: 'hoKhau',
+    title: "Hộ khẩu thường trú",
+    dataIndex: "hoKhau",
+    key: "hoKhau",
 
     width: 500,
   },
   {
-    title: 'Trạng thái học tập',
-    dataIndex: 'trangThaiHocTap',
-    key: 'trangThaiHocTap',
+    title: "Trạng thái học tập",
+    dataIndex: "trangThaiHocTap",
+    key: "trangThaiHocTap",
 
     width: 150,
   },
   {
-    title: 'Loại hình đào tạo',
-    dataIndex: 'loaiHinhDaoTao',
-    key: 'loaiHinhDaoTao',
+    title: "Loại hình đào tạo",
+    dataIndex: "loaiHinhDaoTao",
+    key: "loaiHinhDaoTao",
 
     width: 150,
   },
   {
-    title: 'Dân tộc',
-    dataIndex: 'danToc',
-    key: 'danToc',
+    title: "Dân tộc",
+    dataIndex: "danToc",
+    key: "danToc",
 
     width: 150,
   },
   {
-    title: 'Tôn giáo',
-    dataIndex: 'tonGiao',
-    key: 'tonGiao',
+    title: "Tôn giáo",
+    dataIndex: "tonGiao",
+    key: "tonGiao",
 
     width: 150,
   },
   {
-    title: 'Đói tượng',
-    dataIndex: 'doiTuong',
-    key: 'doiTuong',
+    title: "Đói tượng",
+    dataIndex: "doiTuong",
+    key: "doiTuong",
 
     width: 150,
   },
   {
-    title: 'Thao tác',
-    key: 'operation',
-    fixed: 'right',
+    title: "Thao tác",
+    key: "operation",
+    fixed: "right",
     width: 200,
-    render: () => (<div><Button danger>Chỉnh sửa</Button> <Button>Xóa</Button></div>),
+    render: () => (
+      <div>
+        <Button danger>Chỉnh sửa</Button> <Button>Xóa</Button>
+      </div>
+    ),
   },
 ];
 
@@ -207,35 +208,49 @@ for (let i = 0; i < 100; i++) {
     danToc: `Kinh`,
     tonGiao: `Phật`,
     doiTuong: `Không`,
-
   });
 }
 
-
 const { Option } = Select;
-const khoaData = ['CNTT', 'Công nghệ may', 'Kinh doanh quốc tế'];
-
+const khoaData = ["CNTT", "Công nghệ may", "Kinh doanh quốc tế"];
 
 const SinhVienComponent = () => {
-
   React.useState(khoaData[0]);
- 
+
+  const [visibleModal, setVisibleModal] = useState(false);
+
   return (
-    <div className='sinhvien'>
+    <div className="sinhvien">
       <h1>DANH SÁCH SINH VIÊN</h1>
-      <div className='combox-sv'>
+      <div className="combox-sv">
         <span>Khoa</span>
-        <Select className='ant-select-selector' defaultValue={khoaData[0]} style={{ width: 300 }}>
-          {khoaData.map(khoaData => (
+        <Select
+          className="ant-select-selector"
+          defaultValue={khoaData[0]}
+          style={{ width: 300 }}
+        >
+          {khoaData.map((khoaData) => (
             <Option key={khoaData}>{khoaData}</Option>
           ))}
         </Select>
       </div>
-      <Button className='ant-btn-primary' type="primary"  ><a href='addSV/index'>+ Thêm sinh viên</a></Button>
+      <Button
+        onClick={() => setVisibleModal(true)}
+        className="ant-btn-primary"
+        type="primary"
+      >
+        + Thêm sinh viên
+      </Button>
       <Table
         columns={columns}
         dataSource={data}
-        scroll={{ x: 1500 }}
+        scroll={{ x: 1500, y: "50vh" }}
+      />
+
+      <ModalAddSinhVien
+        type="ad"
+        visible={visibleModal}
+        closeModal={setVisibleModal}
       />
     </div>
   );
