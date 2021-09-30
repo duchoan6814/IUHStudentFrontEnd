@@ -248,7 +248,7 @@ const SinhVienComponent = () => {
       />
 
       <ModalAddSinhVien
-        type="ad"
+        type="hello"
         visible={visibleModal}
         closeModal={setVisibleModal}
       />
