@@ -248,11 +248,11 @@ const SinhVienComponent = () => {
       />
 
       <ModalAddSinhVien
-        type="hello"
+        type="sfsdfads"
         visible={visibleModal}
         closeModal={setVisibleModal}
       />
-      
+
     </div>
   );
 };

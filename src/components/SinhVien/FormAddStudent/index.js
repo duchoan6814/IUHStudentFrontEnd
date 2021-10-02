@@ -37,6 +37,7 @@ const ModalStudent = ({ visible, closeModal, type }) => {
         <Form.Item name={["user", "introduction"]} label="Introduction">
           <Input.TextArea />
         </Form.Item>
+
       </Form>
     );
   };

@@ -1,8 +1,6 @@
 import React from "react";
-import { Button } from 'antd';
+import { Button,Table } from 'antd';
 import './Khoa.scss'
-
-import { Table } from 'antd';
 
 const columns = [
   {
