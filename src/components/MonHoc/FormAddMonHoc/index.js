@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
-import { Modal, Form, Input,Select } from "antd";
+import React, { useEffect, useState } from "react";
+import { Modal, Form, Input, Select} from "antd";
 
 import { isEmpty } from "lodash";
 
 
-const ModalChuyenNganh = ({ visible, closeModal, type, data }) => {
+const ModalMonHoc = ({ visible, closeModal, type, data }) => {
   const layout = {
     labelCol: { span: 4 },
     wrapperCol: { span: 24 },
@@ -15,13 +15,14 @@ const ModalChuyenNganh = ({ visible, closeModal, type, data }) => {
       return;
     }
     form.setFieldsValue({
-      maChuyenNganh: data.maChuyenNganh,
-      tenChuyenNganh: data.tenChuyenNganh,
-      soTinChi: data.soTinChi,
-      khoa: data.khoa,
+      maMonHoc: data.maMonHoc,
+      tenMonHoc: data.tenMonHoc,
       moTa: data.moTa,
+      khoa: data.khoa,
     })
   }, [data])
+
+
   function handleChange(value) {
     console.log(`selected ${value}`);
   }
@@ -34,28 +35,23 @@ const ModalChuyenNganh = ({ visible, closeModal, type, data }) => {
     return (
       <Form {...layout} form={form} name="nest-messages">
         <Form.Item
-          name={"maChuyenNganh"}
-          label="Mã chuyên ngành"
+          name={"maMonHoc"}
+          label="Mã năm học"
         >
           <Input disabled />
         </Form.Item>
         <Form.Item
-          name={"tenChuyenNganh"}
-          label="Tên chuyên ngành"
+          name={"tenMonHoc"}
+          label="Tên môn học"
         >
-          <Input  />
-        </Form.Item>
-        <Form.Item
-          name={"soTinChi"}
-          label="Số tín chỉ"
-        >
-          <Input  />
+          <Input />
         </Form.Item>
         <Form.Item
           label="Khoa"
         >
            <Select options={khoa} style={{ width: 290 }} placeholder='Khoa' onChange={handleChange} />
         </Form.Item>
+        
         <Form.Item
           name={"moTa"}
           label="Mô tả"
@@ -68,7 +64,7 @@ const ModalChuyenNganh = ({ visible, closeModal, type, data }) => {
 
   return (
     <Modal
-      title={type === 'add' ? 'Thêm chuyên ngành' : 'Sửa chuyên ngành'}
+      title={type === 'add' ? 'Thêm môn học' : 'Sửa môn học'}
       centered
       visible={visible}
       onCancel={() => closeModal(false)}
@@ -79,4 +75,4 @@ const ModalChuyenNganh = ({ visible, closeModal, type, data }) => {
   );
 };
 
-export default ModalChuyenNganh;
+export default ModalMonHoc;

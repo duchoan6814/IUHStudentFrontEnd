@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
-import { Modal, Form, Input,Select } from "antd";
+import { Modal, Form, Input,DatePicker } from "antd";
 
 import { isEmpty } from "lodash";
 
 
-const ModalChuyenNganh = ({ visible, closeModal, type, data }) => {
+const ModalHocKy = ({ visible, closeModal, type, data }) => {
   const layout = {
     labelCol: { span: 4 },
     wrapperCol: { span: 24 },
@@ -15,46 +15,42 @@ const ModalChuyenNganh = ({ visible, closeModal, type, data }) => {
       return;
     }
     form.setFieldsValue({
-      maChuyenNganh: data.maChuyenNganh,
-      tenChuyenNganh: data.tenChuyenNganh,
-      soTinChi: data.soTinChi,
-      khoa: data.khoa,
+      maNamHoc: data.maNamHoc,
+      namHocBatDau: data.namHocBatDau,
+      namHocKetThuc: data.namHocKetThuc,
+      hocKy:data.hocKy,
       moTa: data.moTa,
     })
   }, [data])
-  function handleChange(value) {
-    console.log(`selected ${value}`);
+  function onChange(date, dateString) {
+    console.log(date, dateString);
   }
-  const khoa = [
-    { value: 'cnnt', label: 'CNTT' },
-    { value: 'taiNgan', label: 'Tài ngân' },
-
-  ]
   const renderForm = () => {
     return (
       <Form {...layout} form={form} name="nest-messages">
         <Form.Item
-          name={"maChuyenNganh"}
-          label="Mã chuyên ngành"
+          name={"maNamHoc"}
+          label="Mã năm học"
         >
           <Input disabled />
         </Form.Item>
         <Form.Item
-          name={"tenChuyenNganh"}
-          label="Tên chuyên ngành"
+          
+          label="Năm học bắt đầu"
         >
-          <Input  />
+         <DatePicker onChange={onChange} picker="year" placeholder='năm'/>
         </Form.Item>
         <Form.Item
-          name={"soTinChi"}
-          label="Số tín chỉ"
+          
+          label="Năm học kết thúc"
         >
-          <Input  />
+          <DatePicker  onChange={onChange}  picker="year" placeholder='năm'/>
         </Form.Item>
         <Form.Item
-          label="Khoa"
+          name={"hocKy"}
+          label="Học kỳ"
         >
-           <Select options={khoa} style={{ width: 290 }} placeholder='Khoa' onChange={handleChange} />
+          <Input />
         </Form.Item>
         <Form.Item
           name={"moTa"}
@@ -68,7 +64,7 @@ const ModalChuyenNganh = ({ visible, closeModal, type, data }) => {
 
   return (
     <Modal
-      title={type === 'add' ? 'Thêm chuyên ngành' : 'Sửa chuyên ngành'}
+      title={type === 'add' ? 'Thêm học kỳ' : 'Sửa học kỳ'}
       centered
       visible={visible}
       onCancel={() => closeModal(false)}
@@ -79,4 +75,4 @@ const ModalChuyenNganh = ({ visible, closeModal, type, data }) => {
   );
 };
 
-export default ModalChuyenNganh;
+export default ModalHocKy;
