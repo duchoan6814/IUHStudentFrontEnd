@@ -76,7 +76,7 @@ const columns = [
       width: 200,
       render: () => (
           <div>
-              <Button danger>Chỉnh sửa</Button> <Button>Xóa</Button>
+              <Button danger>Chỉnh sửa</Button> <Button style={{marginLeft:10}}>Xóa</Button>
           </div>
       ),
   },

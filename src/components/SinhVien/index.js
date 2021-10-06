@@ -166,7 +166,7 @@ const SinhVienComponent = () => {
           <Button danger onClick={() => handlerEditButton(e)}>
             Chỉnh sửa
           </Button>
-          <Button>Xóa</Button>
+          <Button style={{marginLeft:10}}>Xóa</Button>
         </div>
       ),
     },
