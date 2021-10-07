@@ -1,159 +1,137 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Table, Button, Select, Modal } from "antd";
+import { useQuery, useMutation } from "@apollo/client";
 
+import queries from "core/graphql";
 import ModalAddSinhVien from "./FormAddStudent";
+import { GET_SINHVIENS_FRAGMENT } from "./fragment";
 import "./SinhVien.scss";
 
-
-
-
+const getSinhViensQuery = queries.query.getSinhViens(GET_SINHVIENS_FRAGMENT);
 
 const SinhVienComponent = () => {
   const [visibleModal1, setVisibleModal1] = useState(false);
   const [visibleModal, setVisibleModal] = useState(false);
   const [sinhVien, setSinhVien] = useState({});
+  const [data, setData] = useState([]);
+
   const columns = [
     {
       title: "ID",
       width: 50,
-      dataIndex: "id",
-      key: "id",
+      dataIndex: "sinhVienId",
+      key: "sinhVienId",
       fixed: "left",
     },
     {
       title: "MSSV",
       width: 100,
-      dataIndex: "mssv",
-      key: "mssv",
+      dataIndex: "maSinhVien",
+      key: "maSinhVien",
       fixed: "left",
     },
     {
-      title: "Họ tên",
+      title: "Họ tên đệm",
       width: 250,
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "hoTenDem",
+      key: "hoTenDem",
       fixed: "left",
     },
-
     {
-      title: "Số điện thoại",
-      dataIndex: "sdt",
-      key: "sdt",
-      width: 150,
+      title: "Tên",
+      width: 250,
+      dataIndex: "ten",
+      key: "ten",
     },
     {
-      title: "CMND",
-      dataIndex: "cmnd",
-      key: "cmnd",
-      width: 150,
-    },
-    {
-      title: "Khoa",
-      dataIndex: "khoa",
-      key: "khoa",
-      width: 200,
-    },
-    {
-      title: "Chuyên ngành",
-      dataIndex: "chuyenNganh",
-      key: "chuyenNganh",
-      width: 230,
-    },
-    {
-      title: "Bậc đào tạo",
-      dataIndex: "bacDaoTao",
-      key: "bacDaoTao",
-      width: 150,
-    },
-    {
-      title: "Khóa học",
-      dataIndex: "khoaHoc",
-      key: "khoaHoc",
-      width: 150,
-    },
-    {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-      width: 200,
-    },
-    {
-      title: "Mã hồ sơ",
-      dataIndex: "mahs",
-      key: "mahs",
-      width: 100,
+      title: "Giới tính",
+      width: 250,
+      dataIndex: "gioiTinh",
+      key: "gioiTinh",
     },
     {
       title: "Ngày sinh",
+      width: 250,
       dataIndex: "ngaySinh",
       key: "ngaySinh",
-      width: 100,
     },
     {
-      title: "Ngày vào trường",
-      dataIndex: "ngayVaoTruong",
-      key: "ngayVaoTruong",
-      width: 150,
+      title: "Bậc đào tạo",
+      width: 250,
+      dataIndex: "bacDaoTao",
+      key: "bacDaoTao",
     },
     {
-      title: "Ngày vào đoàn",
-      dataIndex: "ngayVaoDoan",
-      key: "ngayVaoDoan",
-      width: 150,
-    },
-    {
-      title: "Ngày vào Đảng",
-      dataIndex: "ngayVaoDang",
-      key: "ngayVaoDang",
-      width: 150,
-    },
-    {
-      title: "Mã khu vực",
-      dataIndex: "maKhuVuc",
-      key: "maKhuVuc",
-      width: 120,
-    },
-    {
-      title: "Địa chỉ liên hệ",
-      dataIndex: "diaChilh",
-      key: "diaChilh",
-      width: 500,
-    },
-    {
-      title: "Hộ khẩu thường trú",
-      dataIndex: "hoKhau",
-      key: "hoKhau",
-      width: 500,
-    },
-    {
-      title: "Trạng thái học tập",
-      dataIndex: "trangThaiHocTap",
-      key: "trangThaiHocTap",
-      width: 150,
+      title: "Trạng thái",
+      width: 250,
+      dataIndex: "trangThai",
+      key: "trangThai",
     },
     {
       title: "Loại hình đào tạo",
+      width: 250,
       dataIndex: "loaiHinhDaoTao",
       key: "loaiHinhDaoTao",
-      width: 150,
+    },
+    {
+      title: "Ngày vào trường",
+      width: 250,
+      dataIndex: "ngayVaoTruong",
+      key: "ngayVaoTruong",
+    },
+    {
+      title: "Ngày vào đoàn",
+      width: 250,
+      dataIndex: "ngayVaoDoan",
+      key: "ngayVaoDoan",
+    },
+    {
+      title: "Số điện thoại",
+      width: 250,
+      dataIndex: "soDienThoai",
+      key: "soDienThoai",
+    },
+    {
+      title: "Địa chỉ",
+      width: 250,
+      dataIndex: "diaChi",
+      key: "diaChi",
+    },
+    {
+      title: "Nơi sinh",
+      width: 250,
+      dataIndex: "noiSinh",
+      key: "noiSinh",
+    },
+    {
+      title: "Hộ khẩu thường trú",
+      width: 250,
+      dataIndex: "hoKhauThuongTru",
+      key: "hoKhauThuongTru",
     },
     {
       title: "Dân tộc",
+      width: 250,
       dataIndex: "danToc",
       key: "danToc",
-      width: 150,
+    },
+    {
+      title: "Ngày vào đảng",
+      width: 250,
+      dataIndex: "ngayVaoDang",
+      key: "ngayVaoDang",
+    },
+    {
+      title: "Email",
+      width: 250,
+      dataIndex: "email",
+      key: "email",
     },
     {
       title: "Tôn giáo",
+      width: 250,
       dataIndex: "tonGiao",
       key: "tonGiao",
-      width: 150,
-    },
-    {
-      title: "Đối tượng",
-      dataIndex: "doiTuong",
-      key: "doiTuong",
-      width: 150,
     },
     {
       title: "Thao tác",
@@ -166,45 +144,26 @@ const SinhVienComponent = () => {
           <Button danger onClick={() => handlerEditButton(e)}>
             Chỉnh sửa
           </Button>
-          <Button style={{marginLeft:10}}>Xóa</Button>
+          <Button style={{ marginLeft: 10 }}>Xóa</Button>
         </div>
       ),
     },
   ];
+
+  const { data: dataGetSinhViens, loading: loadingGetSinhViens } =
+    useQuery(getSinhViensQuery);
+
   const handlerEditButton = (sinhVien) => {
     setSinhVien(sinhVien);
     setVisibleModal1(true);
   };
-  const data = [];
-  for (let i = 0; i < 100; i++) {
-    data.push({
-      key: i,
-      id: `${i}`,
-      name: `Nguyễn Hoàng Anh Nhân ${i}`,
-      mssv: 18050711,
-      address: `London Park no. ${i}`,
-      sdt: `023191233${i}`,
-      cmnd: `2138631${i}`,
-      khoa: `Khoa Công nghệ thông tin`,
-      chuyenNganh: `Kỹ thuật phần mềm`,
-      bacDaoTao: `Đại học`,
-      khoaHoc: `2018-2022`,
-      email: `email`,
-      mahs: `${i}`,
-      ngaySinh: `1/2/2000`,
-      ngayVaoTruong: `1/2/2017`,
-      ngayVaoDoan: `1/2/2017`,
-      ngayVaoDang: `1/2/2020`,
-      maKhuVuc: 1,
-      diaChilh: `11 Phan Huy Ích,p7,Quân Bình Thạnh,Tp.Hồ Chí Minh, Việt Nam`,
-      hoKhau: `11 Phan Huy Ích,p7,Quân Bình Thạnh,Tp.Hồ Chí Minh, Việt Nam`,
-      trangThaiHocTap: `Đang học`,
-      loaiHinhDaoTao: `Tiên tiến`,
-      danToc: `Kinh`,
-      tonGiao: `Phật`,
-      doiTuong: `Không`,
-    });
-  }
+
+  console.log("dataGetSinhViens", dataGetSinhViens);
+
+  useEffect(() => {
+    const _listSinhVien = dataGetSinhViens?.getSinhViens?.data || [];
+    setData(_listSinhVien);
+  }, [dataGetSinhViens]);
 
   const { Option } = Select;
   const khoaData = ["CNTT", "Công nghệ may", "Kinh doanh quốc tế"];
@@ -248,9 +207,7 @@ const SinhVienComponent = () => {
         type="sua"
         visible={visibleModal1}
         closeModal={setVisibleModal1}
-        data={
-          sinhVien
-        }
+        data={sinhVien}
       />
     </div>
   );
