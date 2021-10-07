@@ -42,13 +42,13 @@ const HocKy = () => {
             title: 'Thao tác',
             key: 'thaoTac',
             width: 300,
-            render: () => (<div><Button danger onClick={(e) => handlerEditButton(e)}>Chỉnh sửa</Button> <Button>Xóa</Button></div>),
+            render: (e) => (<div><Button danger onClick={() => handlerEditButton(e)}>Chỉnh sửa</Button> <Button>Xóa</Button></div>),
         },
     ];
     const data = [];
     for (let i = 0; i < 30; i++) {
         data.push({
-            key: '1',
+            key: i,
             maHocKy: `${i}`,
             moTa: `K1${i}`,
             hocKy: 1,
@@ -58,7 +58,7 @@ const HocKy = () => {
     }
     const handlerEditButton = (hocKy) => {
         setHocKy(hocKy);
-        setVisibleModalSua();
+        setVisibleModalSua(true);
     }
     return (<div className='hocKy'>
         <h1>DANH SÁCH HỌC KỲ</h1>
