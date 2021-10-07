@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Table, Select, Button, Modal } from 'antd';
+import { Table, Select, Button, AutoComplete } from 'antd';
 import './index.scss'
 import ModalAddChuyenNganh from './FormAddChuyenNganh'
 
@@ -49,6 +49,11 @@ const ChuyenNganh = () => {
     setChuyenNganh(chuyenNganh);
     setVisibleModal1(true);
   };
+  const options = [
+    { value: 'Burns Bay Road' },
+    { value: 'Downing Street' },
+    { value: 'Wall Street' },
+  ];
   return (<div className='chuyenNganh'>
     <h1>DANH SÁCH CHUYÊN NGÀNH</h1>
     <div className="combox-sv">
@@ -67,7 +72,32 @@ const ChuyenNganh = () => {
     <Table
       columns={columns}
       expandable={{
-        expandedRowRender: record => <p style={{ margin: 0 }}>{record.description}</p>
+        expandedRowRender: record => <div>
+          <div style={{ marginRight: 100, display: "flex", flexDirection: "row", alignItems: "center" }}>
+            <p style={{
+              width: 1200,
+              margin: 10,
+            }}>{record.tenChuyenNganh}</p>
+            <Button type="primary" danger style={{
+              width: 70,
+            }}>Xóa</Button>
+          </div>
+
+          <div style={{ marginRight: 100, display: "flex", flexDirection: "row", alignItems: "center" }}>
+            <AutoComplete
+              style={{
+                width: 1200,
+                margin: 10,
+              }}
+              options={options}
+              placeholder="Tìm kiếm chuyên ngành"
+              filterOption={(inputValue, option) =>
+                option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+              }
+            />
+            <Button type="primary" style={{ marginRight: 100, display: "flex", }}>Thêm</Button>
+          </div>
+        </div>
       }}
       dataSource={data}
     />
