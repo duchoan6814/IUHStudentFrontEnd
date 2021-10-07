@@ -4,6 +4,11 @@ import { UserOutlined, LaptopOutlined } from "@ant-design/icons";
 
 import SinhVienComponent from "components/SinhVien";
 import KhoaComponent from "components/Khoa";
+import ChuyenNganh from "components/ChuyenNganh";
+import MonHoc from "components/MonHoc";
+import HocKy from "components/HocKy";
+import HocPhan from "components/HocPhan";
+import LopHocPhan from "components/LopHocPhan";
 import "./HomePage.scss";
 import { isEmpty } from "lodash";
 
@@ -20,6 +25,26 @@ const listComponent = [
   {
     key: "6",
     component: KhoaComponent,
+  },
+  {
+    key: "7",
+    component: ChuyenNganh,
+  },
+  {
+    key: "8",
+    component: MonHoc,
+  },
+  {
+    key: "9",
+    component: HocKy,
+  },
+  {
+    key: "10",
+    component: HocPhan,
+  },
+  {
+    key: "11",
+    component: LopHocPhan,
   },
 ];
 
@@ -63,7 +88,7 @@ const HomePage = () => {
             </SubMenu>
             <SubMenu key="sub2" icon={<LaptopOutlined />} title="Chức năng">
               <Menu.Item key="5">Sinh Viên</Menu.Item>
-              <Menu.Item key="6">KHoa</Menu.Item>
+              <Menu.Item key="6">Khoa</Menu.Item>
               <Menu.Item key="7">Chuyên Ngành</Menu.Item>
               <Menu.Item key="8">Môn Học</Menu.Item>
               <Menu.Item key="9">Học Kỳ</Menu.Item>
