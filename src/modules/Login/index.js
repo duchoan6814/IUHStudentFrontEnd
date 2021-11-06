@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, Input, Button, notification } from "antd";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { get, isEmpty } from "lodash";
 
 import LogoIUH from "assets/images/Logo_IUH.png";
@@ -19,7 +19,7 @@ const Login = () => {
    *
    */
 
-  const [actLogin, { loading: loadingLogin }] = useLazyQuery(loginQuery, {
+  const [actLogin, { loading: loadingLogin }] = useMutation(loginQuery, {
     fetchPolicy: "network-only",
     onCompleted: (dataReturn) => {
       const errors = get(dataReturn, "login.errors", []);
