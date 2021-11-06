@@ -15,29 +15,29 @@ const ModalStudent = ({ visible, closeModal, type, data }) => {
       return;
     }
     form.setFieldsValue({
-      ID: data.id,
-      MSSV: data.mssv,
+     sinhVienId: data.sinhVienId,
+      maSinhVien: data.maSinhVien,
       name: data.name,
-      sdt: data.sdt,
-      cmnd: data.cmnd,
-      // khoa: data.khoa,
-      // chuyenNganh: data.chuyenNganh,
-      // bacDaoTao: data.bacDaoTao,
-      // khoaHoc: data.khoaHoc,
-      email: data.email,
-      mahs: data.mahs,
+      maHoSo: data.maHoSo,
+      image: data.image,
+      hoTenDem: data.hoTenDem,
+      ten: data.ten,
+      gioiTinh: data.gioiTinh,
       ngaySinh: data.ngaySinh,
+      bacDaoTao: data.bacDaoTao,
+      trangThai: data.trangThai,
+      loaiHinhDaoTao: data.loaiHinhDaoTao,
       ngayVaoTruong: data.ngayVaoTruong,
       ngayVaoDoan: data.ngayVaoDoan,
-      ngayVaoDang: data.ngayVaoDang,
-      maKhuVuc: data.maKhuVuc,
-      diaChilh: data.diaChilh,
-      hoKhau: data.hoKhau,
-      trangThaiHocTap: data.trangThaiHocTap,
+      soDienThoai: data.soDienThoai,
       loaiHinhDaoTao: data.loaiHinhDaoTao,
+      diaChi: data.diaChi,
+      noiSinh: data.noiSinh,
+      hoKhauThuongTru: data.hoKhauThuongTru,
       danToc: data.danToc,
+      ngayVaoDang: data.ngayVaoDang,
+      email: data.email,
       tonGiao: data.tonGiao,
-      doiTuong: data.doiTuong,
     })
   }, [data])
 
@@ -58,32 +58,32 @@ const ModalStudent = ({ visible, closeModal, type, data }) => {
     return (
       <Form {...layout} form={form} name="nest-messages">
         <Form.Item
-          name={"ID"}
-          label="ID"
+          name={"sinhVienId"}
+          label="sinhVienId"
         >
           <Input disabled />
         </Form.Item>
         <Form.Item
-          name={"MSSV"}
+          name={"maSinhVien"}
           label="MSSV"
         >
           <Input />
         </Form.Item>
         <Form.Item
-          name={"name"}
-          label="Họ tên"
+          name={"maHoSo"}
+          label="Mã hồ sơ"
         >
           <Input />
         </Form.Item>
         <Form.Item
-          name={"sdt"}
-          label="Số điện thoại"
+          name={"image"}
+          label="image"
         >
           <Input />
         </Form.Item>
         <Form.Item
-          name={"cmnd"}
-          label="CMND"
+          name={"hoTenDem"}
+          label="Họ tên đệm"
         >
           <Input />
         </Form.Item>
@@ -99,14 +99,20 @@ const ModalStudent = ({ visible, closeModal, type, data }) => {
         <Select options={bacDaoTao} style={{ width: 290, margin: 10, marginLeft: 40 }} placeholder='Bậc đào tạo' onChange={handleChange} />
         <Select options={khoaHoc} style={{ width: 290, margin: 10, marginLeft: 40 }} placeholder='Khóa học' onChange={handleChange} />
         <Form.Item
-          name={"email1"}
-          label="Email"
+          name={"ten"}
+          label="Tên"
         >
           <Input />
         </Form.Item>
         <Form.Item
           name={"mahs"}
           label="Mã hồ sơ"
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name={"soDienThoai"}
+          label="Số điện thoại"
         >
           <Input />
         </Form.Item>
@@ -123,19 +129,19 @@ const ModalStudent = ({ visible, closeModal, type, data }) => {
           <DatePicker placeholder='Ngày vào Đảng' />
         </Form.Item>
         <Form.Item
-          name={"maKhuVuc"}
-          label="Mã khu vực"
+          name={"email"}
+          label="Email"
         >
           <Input />
         </Form.Item>
         <Form.Item
-          name={"diaChilh"}
-          label="Địa chỉ liên hệ"
+          name={"tonGiao"}
+          label="Tôn giáo"
         >
           <Input />
         </Form.Item>
         <Form.Item
-          name={"hoKhau"}
+          name={"hoKhauThuongTru"}
           label="Hộ khẩu thường trú"
         >
           <Input />

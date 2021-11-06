@@ -15,34 +15,31 @@ const ModalKhoa = ({ visible, closeModal, type, data }) => {
       return;
     }
     form.setFieldsValue({
-      maKhoa: data.maKhoa,
-      tenKhoa: data.tenKhoa,
-      moTa: data.moTa,
+      khoaVienId: data.khoaVienId,
+      tenKhoaVien: data.tenKhoaVien,
+      lienKet: data.lienKet,
     })
   }, [data])
 
-  
-  function handleChange(value) {
-    console.log(`selected ${value}`);
-  }
+ 
   const renderForm = () => {
     return (
       <Form {...layout} form={form} name="nest-messages">
         <Form.Item
-          name={"maKhoa"}
+          name={"khoaVienId"}
           label="Mã khoa"
         >
           <Input disabled />
         </Form.Item>
         <Form.Item
-          name={"tenKhoa"}
-          label="Tên khoa"
+          name={"tenKhoaVien"}
+          label="Tên khoa viện"
         >
           <Input />
         </Form.Item>
         <Form.Item
-          name={"moTa"}
-          label="Mô tả"
+          name={"lienKet"}
+          label="Liên kết"
         >
           <Input />
         </Form.Item>
