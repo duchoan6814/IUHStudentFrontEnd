@@ -1,77 +1,38 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Table, Select, Button } from 'antd';
 import './index.scss'
 import ModalAddLopHocPhan from "./FormAddLopHocPhan";
+import getLopFragment from "./fragment";
+import queries from "core/graphql";
+import { useQuery } from "@apollo/client";
+const getLopQuery = queries.query.getLops(getLopFragment);
 const LopHocPhan = () => {
+
     const [visibleModal, setVisibleModal] = useState(false);
     const [visibleModalSua, setVisibleModalSua] = useState(false);
     const [lopHocPhan, setLopHocPhan] = useState({});
+    const[dataLop,setDataLop]=useState([]);
+
+    const{data: dataGetLops, loading:LoadingGetLops}= useQuery(getLopQuery);
+
     const columns = [
         {
-            title: 'ID',
+            title: 'Lớp ID',
             width: 50,
-            dataIndex: 'id',
-            key: 'id',
+            dataIndex: 'lopId',
+            key: 'lopId',
         },
         {
-            title: 'Mã học phần',
-            dataIndex: 'maHocPhan',
-            key: 'maHocPhan',
+            title: 'Tên lớp',
+            dataIndex: 'tenLop',
+            key: 'tenLop',
             width: 200,
         },
         {
-            title: 'Tên viết tắt',
-            dataIndex: 'tenVietTat',
-            key: 'tenVietTat',
+            title: 'Khóa học',
+            dataIndex: 'khoaHoc',
+            key: 'khoaHoc',
             width: 400,
-        },
-        {
-            title: 'Tên lớp học phần',
-            dataIndex: 'tenLopHocPhan',
-            key: 'tenLopHocPhan',
-            width: 300,
-        },
-        {
-            title: 'Số nhóm thực hành',
-            dataIndex: 'soNhomTH',
-            key: 'soNhomTH',
-            width: 300,
-        },
-        {
-            title: 'Trạng thái',
-            dataIndex: 'trangThai',
-            key: 'trangThai',
-            width: 300,
-        },
-        {
-            title: 'Số lượng đăng ký tối đa',
-            dataIndex: 'soLuongDangKyToiDa',
-            key: 'soLuongDangKyToiDa',
-            width: 300,
-        },
-        {
-            title: 'Số lượng đăng ký hiện tại',
-            dataIndex: 'soLuongDangKyHienTai',
-            key: 'soLuongDangKyHienTai',
-            width: 300,
-        },
-        {
-            title: 'ID học phần tương ứng',
-            dataIndex: 'idLopHocPhanTuongUng',
-            key: 'idLopHocPhanTuongUng',
-            width: 300,
-        },
-        {
-            title: 'Học kỳ',
-            dataIndex: 'hocKy',
-            key: 'hocKy',
-            width: 300,
-        },
-        {
-            title: 'Mô tả',
-            dataIndex: 'moTa',
-            key: 'moTa',
-            width: 300,
         },
         {
             title: 'Action',
@@ -85,30 +46,21 @@ const LopHocPhan = () => {
             ),
         },
     ];
+    useEffect(() => {
+        const _listLop= dataGetLops?.getLops?.data;
+        setDataLop(_listLop);
+    }, [dataGetLops])
     
-    const data = [];
-    for (let i = 0; i < 13; i++) {
-        data.push({
-            key: i,
-            id: `${i}`,
-            maHocPhan: `400129343${i}`,
-            tenVietTat: `DHKTPM14`,
-            tenLopHocPhan: `----`,
-            soNhomTH: 4,
-            trangThai: `Đang mở`,
-            soLuongDangKyToiDa: `90`,
-            soLuongDangKyHienTai: `35`,
-            idLopHocPhanTuongUng: `1231241`,
-            hocKy: 5,
-            moTa: `không`,
-    
-        });
-    
-    }
     const handlerEditButton = (lopHocPhan) => {
         setLopHocPhan(lopHocPhan);
         setVisibleModalSua(true);
     };
+    const handleCreateLop =(e)=>{
+        setVisibleModal(false);
+        let _data = dataLop;
+        _data = [e, ..._data];
+        setDataLop(_data);
+    }
     const { Option } = Select;
     const khoaData = ["CNTT", "Công nghệ may", "Kinh doanh quốc tế"];
     
@@ -129,11 +81,12 @@ const LopHocPhan = () => {
                 </Select>
             </div>
             <Button className='ant-btn-primary' type="primary" onClick={()=>setVisibleModal(true)}>+ Thêm lớp học phần</Button>
-            <Table columns={columns} dataSource={data} scroll={{ x: 1300 }} />
+            <Table columns={columns} dataSource={dataLop} scroll={{ x: 1300 }} />
             <ModalAddLopHocPhan
                 type="add"
                 visible={visibleModal}
                 closeModal={setVisibleModal}
+                onCompleteAction={(e)=>handleCreateLop(e)}
             />
             <ModalAddLopHocPhan
                 type="sua"

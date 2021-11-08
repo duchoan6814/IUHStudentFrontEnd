@@ -1,125 +1,91 @@
 import React, { useEffect } from "react";
-import { Modal, Form, Input, DatePicker, Select } from "antd";
+import { Modal, Form, Input, notification } from "antd";
 
 import { isEmpty } from "lodash";
+import { useMutation } from '@apollo/client';
 
+import { get } from "lodash";
+import queries from 'core/graphql';
 
-const ModalAddLopHocPhan = ({ visible, closeModal, type, data }) => {
+const createLopMutation = queries.mutation.createLop();
+
+const ModalAddLopHocPhan = ({ visible, closeModal, type, data, onCompleteAction }) => {
 
     const layout = {
         labelCol: { span: 4 },
         wrapperCol: { span: 24 },
     };
+    const [actCreateLop, { data: dataCreateLop, loading: loadingCreateLop }] = useMutation(createLopMutation,
+        {
+            onCompleted: (dataReturn) => {
+                const errors = get(dataReturn, 'createLop.errors', []);
+                if (!isEmpty(errors)) {
+                    return errors.map(item =>
+                        notification["error"]({
+                            message: item?.message,
+                        })
+                    )
+                }
+
+                const _data = get(dataReturn, 'createLop.data', {});
+
+                if (!isEmpty(_data)) {
+                    onCompleteAction(_data)
+                    return;
+                }
+
+                notification["error"]({
+                    message: "Loi ket noi",
+                })
+            }
+        });
     const [form] = Form.useForm();
     useEffect(() => {
         if (isEmpty(data)) {
             return;
         }
         form.setFieldsValue({
-            id: data.id,
-            maHocPhan: data.maHocPhan,
-            tenVietTat: data.tenVietTat,
-            tenLopHocPhan: data.tenLopHocPhan,
-            soNhomTH: data.soNhomTH,
-            trangThai: data.trangThai,
-            soLuongDangKyToiDa: data.soLuongDangKyToiDa,
-            soLuongDangKyHienTai: data.soLuongDangKyHienTai,
-            idLopHocPhanTuongUng: data.idLopHocPhanTuongUng,
-            hocKy: data.hocKy,
-            moTa: data.moTa,
+            tenLop: data.tenLop,
+            khoaHoc: data.khoaHoc,
         })
     }, [data])
     function onChange(date, dateString) {
         console.log(date, dateString);
     }
-    const trangThai = [
-        { value: 'dangHoc', label: 'Đang học' },
-        { value: 'daKetThuc', label: 'Đã kết thúc' },
-
-    ]
-    const monHocTienQuyet = [
-        { value: 'toanCC', label: 'Toán cao cấp' },
-        { value: 'cauTrucRoiRac', label: 'Cấu trúc rời rạc' },
-
-    ]
-    const monHocSongHanh = [
-        { value: 'toanCC', label: 'Toán cao cấp' },
-        { value: 'cauTrucRoiRac', label: 'Cấu trúc rời rạc' },
-
-    ]
-    const monHocTuongDuong = [
-        { value: 'toanCC', label: 'Toán cao cấp' },
-        { value: 'cauTrucRoiRac', label: 'Cấu trúc rời rạc' },
-
-    ]
+    const handleAddLop = () => {
+        const _dataForm = form.getFieldsValue(true);
+        actCreateLop({
+            variables: {
+                tenLop: _dataForm?.tenLop,
+                khoaHoc: _dataForm?.khoaHoc,
+            }
+        })
+    }
+    const handleEditLop = () => {
+        console.log("UpdateLop");
+    }
     const renderForm = () => {
         return (
             <Form {...layout} form={form} name="nest-messages">
                 <Form.Item
-                    name={"id"}
-                    label="ID"
+                    name={"lopId"}
+                    label="Lop ID"
                 >
                     <Input disabled />
                 </Form.Item>
                 <Form.Item
-                    name={"maHocPhan"}
-                    label="Mã học phần"
+                    name={"tenLop"}
+                    label="Tên lớp"
                 >
                     <Input />
                 </Form.Item>
                 <Form.Item
-                    name={"tenVietTat"}
-                    label="Tên viết tắt"
+                    name={"khoaHoc"}
+                    label="Khóa học"
                 >
                     <Input />
                 </Form.Item>
-                <Form.Item
-                    name={"tenLopHocPhan"}
-                    label="Tên lớp học phần"
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item
-                    name={"soNhomTH"}
-                    label="Số nhóm thực hành"
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item
-                    label="Trạng thái"
-                >
-                    <Select options={trangThai} style={{ width: 290 }} placeholder='Trạng thái' />
-                </Form.Item>
-                <Form.Item
-                    name={"soLuongDangKyToiDa"}
-                    label="Số lượng đăng ký tối đa"
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item
-                    name={"soLuongDangKyHienTai"}
-                    label="Số lượng đăng ký hiện tại"
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item
-                    name={"idLopHocPhanTuongUng"}
-                    label="ID lớp học phần tương ứng"
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item
-                    name={"hocKy"}
-                    label="Học kỳ"
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item
-                    name={"moTa"}
-                    label="Mô tả"
-                >
-                    <Input />
-                </Form.Item>
+
             </Form>
         );
     };
@@ -130,7 +96,7 @@ const ModalAddLopHocPhan = ({ visible, closeModal, type, data }) => {
             visible={visible}
             onCancel={() => closeModal(false)}
             width={1000}
-
+            onOk={type === 'add' ? handleAddLop : handleEditLop}
         >
             {renderForm()}
         </Modal>

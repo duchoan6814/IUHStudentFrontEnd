@@ -266,7 +266,6 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
   }
   const handleUpdateSinhVien = () => {
     const _dataForm = form.getFieldsValue(true);
-    console.log("data", _dataForm);
     actUpdateSinhVien({
       variables: {
         inputs: {
