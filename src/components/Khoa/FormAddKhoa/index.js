@@ -1,14 +1,68 @@
 import React, { useEffect } from "react";
-import { Modal, Form, Input } from "antd";
+import { Modal, Form, Input, notification } from "antd";
+import {useMutation} from '@apollo/client';
 
-import { isEmpty } from "lodash";
+import { get, isEmpty } from "lodash";
+import queries from 'core/graphql';
 
+const createKhoaMutation = queries.mutation.createKhoa();
+const updateKhoaMutation = queries.mutation.updateKhoa();
 
-const ModalKhoa = ({ visible, closeModal, type, data }) => {
+const ModalKhoa = ({ visible, closeModal, type, data, onCreateComplete }) => {
   const layout = {
     labelCol: { span: 4 },
     wrapperCol: { span: 24 },
   };
+
+  const [actUpdateKhoa, {data: dataUpdateKhoa, loading: loadingUpdateKhoa}] = useMutation(updateKhoaMutation, {
+    onCompleted: (dataReturn) => {
+      const errors = get(dataReturn, 'updateKhoa.errors', []);
+        if(!isEmpty(errors)) {
+          return errors.map(item => 
+              notification["error"]({
+                message: item?.message,
+              })
+            )
+        }
+
+        const _data = get(dataReturn, 'updateKhoa.data', {});
+
+        if(!isEmpty(_data)) {
+          onCreateComplete(_data)
+          return;
+        }
+
+        notification["error"]({
+          message: "Loi ket noi",
+        })
+    }
+  }); 
+
+  const [actCreateKhoa, {data: dataCreateKhoa, loading: loadingCreateKhoa}] = useMutation(createKhoaMutation,
+    {
+      onCompleted: (dataReturn) => {
+        const errors = get(dataReturn, 'createKhoa.errors', []);
+        if(!isEmpty(errors)) {
+          return errors.map(item => 
+              notification["error"]({
+                message: item?.message,
+              })
+            )
+        }
+
+        const _data = get(dataReturn, 'createKhoa.data', {});
+
+        if(!isEmpty(_data)) {
+          onCreateComplete(_data)
+          return;
+        }
+
+        notification["error"]({
+          message: "Loi ket noi",
+        })
+      }
+    });
+
   const [form] = Form.useForm();
   useEffect(() => {
     if (isEmpty(data)) {
@@ -47,6 +101,32 @@ const ModalKhoa = ({ visible, closeModal, type, data }) => {
     );
   };
 
+  const handleAddKhoa = () => {
+    const _dataForm = form.getFieldsValue(true);
+    actCreateKhoa({
+      variables: {
+        inputs: {
+          tenKhoaVien: _dataForm?.tenKhoaVien,
+          lienKet: _dataForm?.lienKet
+        }
+      }
+    })
+  }
+
+  const handleEditKhoa = () => {
+    const _dataForm = form.getFieldsValue(true);
+
+    actUpdateKhoa({
+      variables: {
+        inputs: {
+          tenKhoaVien: _dataForm?.tenKhoaVien,
+          lienKet: _dataForm?.lienKet
+        },
+        maKhoa: _dataForm?.khoaVienId
+      }
+    })
+  }
+
   return (
     <Modal
       title={type === 'add' ? 'Thêm khoa' : 'Sửa khoa'}
@@ -54,6 +134,8 @@ const ModalKhoa = ({ visible, closeModal, type, data }) => {
       visible={visible}
       onCancel={() => closeModal(false)}
       width={1000}
+      onOk={type === 'add' ? handleAddKhoa : handleEditKhoa}
+      confirmLoading={loadingCreateKhoa || loadingUpdateKhoa}
     >
       {renderForm()}
     </Modal>

@@ -7,16 +7,22 @@ import { useQuery } from "@apollo/client";
 
 import { getSinhVienFragment } from "./fragment";
 import queries from "core/graphql";
+import { getKhoafragment } from "components/Khoa/fragment";
 
 const getSinhVienQuery = queries.query.getSinhViens(getSinhVienFragment);
+const getKhoaQuery = queries.query.getKhoas(getKhoafragment);
 
 const SinhVienComponent = () => {
-  const {data:dataGetSinhViens,loading: loadingGetSinhViens} = useQuery(getSinhVienQuery);
-  
+
+  const { data: dataGetSinhViens, loading: loadingGetSinhViens } = useQuery(getSinhVienQuery);
+  const { data: dataGetKhoas} = useQuery(getKhoaQuery);
+
   const [visibleModal1, setVisibleModal1] = useState(false);
   const [visibleModal, setVisibleModal] = useState(false);
   const [sinhVien, setSinhVien] = useState({});
   const [data, setDataSinhVien] = useState([]);
+  const [dataKhoa,setDataKhoa] = useState([]);
+  const [currentKhoa, setCurrentKhoa] = useState({});
 
   const columns = [
     {
@@ -35,22 +41,17 @@ const SinhVienComponent = () => {
     },
     {
       title: "Họ tên đệm",
-      width: 250,
+      width: 200,
       dataIndex: "hoTenDem",
       key: "hoTenDem",
       fixed: "left",
     },
     {
       title: "Tên",
-      width: 250,
+      width: 80,
       dataIndex: "ten",
       key: "ten",
-    },
-    {
-      title: "Giới tính",
-      width: 250,
-      dataIndex: "gioiTinh",
-      key: "gioiTinh",
+      fixed: "left",
     },
     {
       title: "Ngày sinh",
@@ -87,6 +88,12 @@ const SinhVienComponent = () => {
       width: 250,
       dataIndex: "ngayVaoDoan",
       key: "ngayVaoDoan",
+    },
+    {
+      title: "Giới tính",
+      width: 250,
+      dataIndex: "gioiTinh",
+      key: "gioiTinh",
     },
     {
       title: "Số điện thoại",
@@ -157,18 +164,40 @@ const SinhVienComponent = () => {
     setSinhVien(sinhVien);
     setVisibleModal1(true);
   };
+
+  const handleChangeKhoa = (e) => {
+    console.log('e', e);
+    const _currentKhoa = dataKhoa?.find(item => item?.khoaVienId === e);
+    setCurrentKhoa(_currentKhoa);
+  }
+
   useEffect(() => {
     const _listSinhVien = dataGetSinhViens?.getSinhViens?.data;
+    console.log(_listSinhVien);
     setDataSinhVien(_listSinhVien);
-    
-  }, [dataGetSinhViens])
 
+  }, [dataGetSinhViens])
+  useEffect(()=>{
+    const _listKhoa = dataGetKhoas?.getKhoas?.data;
+    setDataKhoa(_listKhoa);
+    setCurrentKhoa(_listKhoa?.[0])
+  }, [dataGetKhoas?.getKhoas?.data])
+
+  const handleCreateSinhVien = (e) => {
+    setVisibleModal(false);
+    let _data = data;
+    _data = [e, ..._data];
+    setDataSinhVien(_data);
+  }
+  const handleUpdateSinhVien = (e) => {
+    setVisibleModal1(false);
+    let _data = data;
+    _data = [e, ..._data];
+    setDataSinhVien(_data);
+  }
   const { Option } = Select;
   // get list khoa
-  const khoaData = ["CNTT", "Công nghệ may", "Kinh doanh quốc tế"];
-
-  React.useState(khoaData[0]);
-
+  
   return (
     <div className="sinhvien">
       <h1>DANH SÁCH SINH VIÊN</h1>
@@ -176,11 +205,12 @@ const SinhVienComponent = () => {
         <span>Khoa</span>
         <Select
           className="ant-select-selector"
-          defaultValue={khoaData[0]}
+          value={currentKhoa?.tenKhoaVien}
           style={{ width: 300 }}
+          onChange={handleChangeKhoa}
         >
-          {khoaData.map((khoaData) => (
-            <Option key={khoaData}>{khoaData}</Option>
+          {dataKhoa?.map((khoaData) => (
+            <Option key={khoaData?.khoaVienId}>{khoaData?.tenKhoaVien}</Option>
           ))}
         </Select>
       </div>
@@ -201,6 +231,7 @@ const SinhVienComponent = () => {
         type="add"
         visible={visibleModal}
         closeModal={setVisibleModal}
+        onCreateComplete={(e)=>{handleCreateSinhVien(e)}}
       />
       <ModalAddSinhVien
         type="sua"
@@ -209,6 +240,7 @@ const SinhVienComponent = () => {
         data={
           sinhVien
         }
+        onCreateComplete={(e)=>{handleUpdateSinhVien(e)}}
       />
     </div>
   );
