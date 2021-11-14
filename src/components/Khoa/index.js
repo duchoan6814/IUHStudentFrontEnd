@@ -125,7 +125,6 @@ const KhoaComponent = () => {
    const _listKhoa = dataGetKhoas?.getKhoas?.data;
    setDataKhoa(_listKhoa);
   }, [dataGetKhoas]);
-  console.log(data);
   return (
     <div className='khoa'>
       <h1>DANH SÁCH KHOA</h1>

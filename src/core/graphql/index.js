@@ -9,12 +9,22 @@ import createSinhVien from "./createSinhVien";
 import updateSinhVien from "./updateSinhVien";
 import getLops from "./getLops";
 import createLop from "./createLop";
+import getMonHocs from "./getMonHocs";
+import createMonHoc from "./createMonHoc";
+import getHocKys from "./getHocKys";
+import getChuyenNganhs from "./getChuyenNganhs";
+import updateMonHoc from "./updateMonHoc";
+import createChuyenNganh from "./createChuyenNganh";
+import updateChuyenNganh from "./updateChuyenNganh";
 const query = {
   ...Login.query,
   ...GetProfile.query,
   ...getKhoas.query,
   ...getSinhViens.query,
   ...getLops.query,
+  ...getMonHocs.query,
+  ...getHocKys.query,
+  ...getChuyenNganhs.query,
 };
 
 const mutation = {
@@ -24,6 +34,10 @@ const mutation = {
   ...createSinhVien.mutation,
   ...updateSinhVien.mutation,
   ...createLop.mutation,
+  ...createMonHoc.mutation,
+  ...updateMonHoc.mutation,
+  ...createChuyenNganh.mutation,
+  ...updateChuyenNganh.mutation,
 };
 
 export default {

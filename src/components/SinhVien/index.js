@@ -166,14 +166,12 @@ const SinhVienComponent = () => {
   };
 
   const handleChangeKhoa = (e) => {
-    console.log('e', e);
     const _currentKhoa = dataKhoa?.find(item => item?.khoaVienId === e);
     setCurrentKhoa(_currentKhoa);
   }
 
   useEffect(() => {
     const _listSinhVien = dataGetSinhViens?.getSinhViens?.data;
-    console.log(_listSinhVien);
     setDataSinhVien(_listSinhVien);
 
   }, [dataGetSinhViens])
