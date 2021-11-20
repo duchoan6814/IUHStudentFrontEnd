@@ -5,10 +5,11 @@ import ModalMonHoc from './FormAddMonHoc';
 
 import queries from 'core/graphql';
 import { getMonHocFragment } from './fragment';
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
+import { get,isEmpty } from "lodash";
 
 const getMonHocsQuery = queries.query.getMonHocs(getMonHocFragment);
-
+const deleteMonHocMutaion = queries.mutation.deleteMonHoc();
 const MonHoc = () => {
     const [visible, setVisibleModal] = useState(false);
     const [visibleSua, setVisibleModalSua] = useState(false);
@@ -16,6 +17,7 @@ const MonHoc = () => {
     const [dataMonHoc, setDataMonHoc] = useState([]);
 
     const { data: dataGetMonHocs, loading: loadingGetMonHoc } = useQuery(getMonHocsQuery);
+    const [actDeleteMonHoc, { data: dataDeleteMonHoc, loading: loadingDeleteMonHoc }] = useMutation(deleteMonHocMutaion);
     const columns = [
         {
             title: 'Mã môn học',
@@ -46,14 +48,42 @@ const MonHoc = () => {
             title: 'Thao tác',
             key: 'thaoTac',
             width: 300,
-            render: (e) => (<div><Button danger onClick={() => { handlerEditButton(e) }}>Chỉnh sửa</Button> <Button>Xóa</Button></div>),
+            render: (e) => (<div>
+                <Button danger onClick={() => { handlerEditButton(e) }}>Chỉnh sửa</Button>
+                <Button onClick={() => handleDeleteButton(e)}>Xóa</Button>
+            </div>),
         },
     ];
     useEffect(() => {
         const _listMonHoc = dataGetMonHocs?.getMonHocs?.data;
         setDataMonHoc(_listMonHoc);
     }, [dataGetMonHocs]);
-
+    const handleDeleteButton  = async (e) => {
+        const _dataReutrn = await actDeleteMonHoc({
+            variables: {
+                monHocId: e?.monHocId,
+            }
+        })
+        const dataReturn = get(_dataReutrn, "data", {});
+        const errors = get(dataReturn, "deleteMonHoc.errors", []);
+        if (!isEmpty(errors)) {
+            errors?.map(item => console.log(item.message))
+            return;
+        }
+        const status = get(dataReturn, 'deleteMonHoc.status', "");
+        if (status === "OK") {
+            const _index = dataMonHoc?.findIndex(item => item?.monHocId === e?.monHocId)
+            let _listMonHoc = dataMonHoc;
+            _listMonHoc = [
+                ..._listMonHoc.slice(0, _index),
+                ..._listMonHoc.slice(_index +1)
+            ];
+            console.log('_listMonHoc', _listMonHoc);
+            setDataMonHoc(_listMonHoc);
+            return;
+        }
+        console.log("Loi ket noi");
+    }
     const handleCrateKhoaComplete = (e) => {
         setVisibleModal(false);
         let _data = dataMonHoc;
@@ -62,21 +92,21 @@ const MonHoc = () => {
     }
     const handleUpdateMonHocComplete = (e) => {
         setVisibleModalSua(false);
-    
+
         const _index = dataMonHoc?.findIndex(item => item?.monHocId === e?.monHocId);
-    
+
         let _data = dataMonHoc;
         _data = [
-          ...dataMonHoc?.slice(0, _index),
-          {
-            ..._data?.[_index],
-            ...e
-          },
-          ...dataMonHoc?.slice(_index + 1)
+            ...dataMonHoc?.slice(0, _index),
+            {
+                ..._data?.[_index],
+                ...e
+            },
+            ...dataMonHoc?.slice(_index + 1)
         ];
-    
+
         setDataMonHoc(_data);
-      }
+    }
     const handlerEditButton = (monHoc) => {
         setMonHoc(monHoc);
         setVisibleModalSua(true);

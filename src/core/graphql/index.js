@@ -16,6 +16,7 @@ import getChuyenNganhs from "./getChuyenNganhs";
 import updateMonHoc from "./updateMonHoc";
 import createChuyenNganh from "./createChuyenNganh";
 import updateChuyenNganh from "./updateChuyenNganh";
+import deleteMonHoc from "./deleteMonHoc";
 const query = {
   ...Login.query,
   ...GetProfile.query,
@@ -38,6 +39,7 @@ const mutation = {
   ...updateMonHoc.mutation,
   ...createChuyenNganh.mutation,
   ...updateChuyenNganh.mutation,
+  ...deleteMonHoc.mutation,
 };
 
 export default {

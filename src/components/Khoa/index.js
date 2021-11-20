@@ -16,11 +16,11 @@ const KhoaComponent = () => {
 
   const [visibleModal1, setVisibleModal1] = useState(false);
   const [visibleModal, setVisibleModal] = useState(false);
-  const [data,setDataKhoa]= useState([]);
-  const [khoa,setKhoa]=useState({});
+  const [data, setDataKhoa] = useState([]);
+  const [khoa, setKhoa] = useState({});
 
   const { data: dataGetKhoas, loading: loadingGetKhoas } = useQuery(getKhoasQuery);
-  const [actDeleteKhoa, {data: dataDeleteKhoa, loading: loadingDeleteKhoa}] = useMutation(deleteKhoaMutation);
+  const [actDeleteKhoa, { data: dataDeleteKhoa, loading: loadingDeleteKhoa }] = useMutation(deleteKhoaMutation);
 
   const columns = [
     {
@@ -58,8 +58,8 @@ const KhoaComponent = () => {
 
 
   const handleButtonDelete = async (khoa) => {
-    console.log('khoa', khoa);
-    const _dataReutrn  = await actDeleteKhoa({
+    
+    const _dataReutrn = await actDeleteKhoa({
       variables: {
         khoaID: khoa?.khoaVienId
       }
@@ -68,27 +68,27 @@ const KhoaComponent = () => {
     const dataReturn = get(_dataReutrn, "data", {});
 
     const errors = get(dataReturn, 'deleteKhoa.errors', []);
-          if(!isEmpty(errors)) {
-            errors?.map(item => console.log(item.message));
-            return;
-          }
+    if (!isEmpty(errors)) {
+      errors?.map(item => console.log(item.message));
+      return;
+    }
 
-          const status = get(dataReturn, 'deleteKhoa.status', "");
-          if (status === "OK") {
-            const _index = data?.findIndex(item => item?.khoaVienId === khoa?.khoaVienId)
+    const status = get(dataReturn, 'deleteKhoa.status', "");
+    if (status === "OK") {
+      const _index = data?.findIndex(item => item?.khoaVienId === khoa?.khoaVienId)
 
-            let _listKhoa = data;
-            _listKhoa = [
-              ..._listKhoa.slice(0, _index),
-              ..._listKhoa.slice(_index + 1)
-            ];
+      let _listKhoa = data;
+      _listKhoa = [
+        ..._listKhoa.slice(0, _index),
+        ..._listKhoa.slice(_index + 1)
+      ];
 
-            setDataKhoa(_listKhoa);
+      setDataKhoa(_listKhoa);
 
-            return;
-          }
+      return;
+    }
 
-          console.log("Loi ket noi");
+    console.log("Loi ket noi");
   }
 
   const handlerEditButton = (e) => {
@@ -122,8 +122,8 @@ const KhoaComponent = () => {
   }
 
   useEffect(() => {
-   const _listKhoa = dataGetKhoas?.getKhoas?.data;
-   setDataKhoa(_listKhoa);
+    const _listKhoa = dataGetKhoas?.getKhoas?.data;
+    setDataKhoa(_listKhoa);
   }, [dataGetKhoas]);
   return (
     <div className='khoa'>
@@ -134,7 +134,7 @@ const KhoaComponent = () => {
         type="add"
         visible={visibleModal}
         closeModal={setVisibleModal}
-        onCreateComplete={(e) =>handleCrateKhoaComplete(e)}
+        onCreateComplete={(e) => handleCrateKhoaComplete(e)}
       />
       <ModalAddKhoa
         type="sua"
@@ -143,7 +143,7 @@ const KhoaComponent = () => {
         data={
           khoa
         }
-        onCreateComplete={(e) =>handleUpdateKhoaComplete(e)}
+        onCreateComplete={(e) => handleUpdateKhoaComplete(e)}
       />
     </div>
   );
