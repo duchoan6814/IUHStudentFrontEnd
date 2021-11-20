@@ -93,7 +93,7 @@ const ModalMonHoc = ({ visible, closeModal, type, data, onCreateComplete }) => {
           tenMonHoc: _dataForm?.tenMonHoc,
           moTa: _dataForm?.moTa
         },
-        monHocId: _dataForm?.monHocId
+        maMonHoc: _dataForm?.monHocId
       }
     })
   }

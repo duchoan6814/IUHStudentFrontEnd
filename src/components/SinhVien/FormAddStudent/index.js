@@ -17,6 +17,15 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
     labelCol: { span: 4 },
     wrapperCol: { span: 24 },
   };
+  const [ngaySinh, setngaySinh] = useState();
+  const [ngayVaoDoan, setngayVaoDoan] = useState();
+  const [ngayVaoTruong, setngayVaoTruong] = useState();
+  const [ngayVaoDang, setngayVaoDang] = useState();
+  const [trangThai1, settrangThai] = useState();
+  const [bacDaoTao1, setbacDaoTao] = useState();
+  const [loaiHinhDaoTao1, setloaiHinhDaoTao] = useState();
+  const [tonGiao1, settonGiao] = useState();
+
   const [actUpdateSinhVien, { data: dataUpdateSinhVien, loading: lodingUpdateSinhVien }] = useMutation(updateSinhVienMutation,
     {
       onCompleted: (dataReturn) => {
@@ -79,43 +88,68 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
       hoTenDem: data.hoTenDem,
       ten: data.ten,
       gioiTinh: data.gioiTinh,
-      ngaySinh: data.ngaySinh,
-      bacDaoTao: data.bacDaoTao,
-      trangThai: data.trangThai,
-      loaiHinhDaoTao: data.loaiHinhDaoTao,
-      ngayVaoTruong: data.ngayVaoTruong,
-      ngayVaoDoan: data.ngayVaoDoan,
       soDienThoai: data.soDienThoai,
-      loaiHinhDaoTao: data.loaiHinhDaoTao,
       diaChi: data.diaChi,
       noiSinh: data.noiSinh,
       hoKhauThuongTru: data.hoKhauThuongTru,
       danToc: data.danToc,
-      ngayVaoDang: data.ngayVaoDang,
       email: data.email,
-      tonGiao: data.tonGiao,
     })
-  }, [data])
+    setngaySinh(data.ngaySinh);
+    setngayVaoDang(data.ngayVaoDang);
+    setngayVaoDoan(data.ngayVaoDoan);
+    setngayVaoTruong(data.ngayVaoTruong);
+    setbacDaoTao(data.bacDaoTao);
+    setloaiHinhDaoTao(data.loaiHinhDaoTao);
+    settrangThai(data.trangThai);
+    settonGiao(data.tonGiao);
+  }, [data]);
 
   const bacDaoTao = [
-    { value: 'Cd', label: 'CAO_DANG' },
-    { value: 'dh', label: 'DAI_HOC' },
+    { value: 'CAO_DANG', label: 'CAO_DANG' },
+    { value: 'DAI_HOC', label: 'DAI_HOC' },
   ]
   const trangThai = [
-    { value: 'dh', label: 'DANG_HOC' },
-    { value: 'rh', label: 'RA_TRUONG' },
-    { value: 'bl', label: 'BAO_LUU' },
+    { value: 'DANG_HOC', label: 'DANG_HOC' },
+    { value: 'RA_TRUONG', label: 'RA_TRUONG' },
+    { value: 'BAO_LUU', label: 'BAO_LUU' },
   ]
   const loaiHinhDaoTao = [
-    { value: 'tt', label: 'TIEN_TIEN' },
-    { value: 'dt', label: 'DAI_TRA' },
+    { value: 'TIEN_TIEN', label: 'TIEN_TIEN' },
+    { value: 'DAI_TRA', label: 'DAI_TRA' },
   ]
   const tonGiao = [
-    { value: 'pg', label: 'PHAT_GIAO' },
-    { value: 'k', label: 'KHONG' },
+    { value: 'PHAT_GIAO', label: 'PHAT_GIAO' },
+    { value: 'KHONG', label: 'KHONG' },
   ]
-  function handleChange(value) {
-    console.log(`selected ${value}`);
+  function handleChange(type, value) {
+    if (type === 'BacDaoTao') {
+      setbacDaoTao(value);
+    }
+    if (type === 'tonGiao') {
+      settonGiao(value);
+    }
+    if (type === 'loaiHinhDaoTao') {
+      setloaiHinhDaoTao(value);
+    }
+    if (type === 'trangThai') {
+      settrangThai(value);
+    }
+  }
+
+  const handleChangeNgay = (type, date, dateString) => {
+    if (type === 'ngaySinh') {
+      setngaySinh(dateString);
+    }
+    if (type === 'ngayVaoTruong') {
+      setngayVaoTruong(dateString);
+    }
+    if (type === 'ngayVaoDang') {
+      setngayVaoDang(dateString);
+    }
+    if (type === 'ngayVaoDoan') {
+      setngayVaoDoan(dateString);
+    }
   }
   const renderForm = () => {
     return (
@@ -156,6 +190,12 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
         >
           <Input />
         </Form.Item>
+        <Form.Item name="ngaySinh" label="Ngày sinh">
+          <DatePicker
+            onChange={(date, dateString) => handleChangeNgay('ngaySinh', date, dateString)}
+            value={type === 'add' ? null : moment(ngaySinh, 'DD-MM-YYYY')}
+            placeholder='Ngày sinh' />
+        </Form.Item>
         <Form.Item label="Chuyên ngành">
           <Select style={{ width: 200 }} placeholder='Chuyên ngành' onChange={handleChange}>
             <OptGroup label="CNTT">
@@ -166,26 +206,48 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
         </Form.Item>
 
         <Form.Item label="Bậc đào tạo">
-          <Select options={bacDaoTao} style={{ width: 290 }} defaultValue={"Cd"} placeholder='Bậc đào tạo' onChange={handleChange} />
+          <Select
+            options={bacDaoTao}
+            style={{ width: 290 }}
+            value={bacDaoTao1}
+            placeholder='Bậc đào tạo'
+            onChange={(value) => handleChange('BacDaoTao', value)} />
         </Form.Item>
 
         <Form.Item label="Trạng thái">
-          <Select options={trangThai} style={{ width: 290 }} defaultValue={"dh"} placeholder='Trạng thái' onChange={handleChange} />
+          <Select
+            options={trangThai}
+            style={{ width: 290 }}
+            value={trangThai1}
+            placeholder='Trạng thái'
+            onChange={(value) => handleChange('trangThai', value)} />
         </Form.Item>
         <Form.Item label="Loại hình đào tạo">
-          <Select options={loaiHinhDaoTao} style={{ width: 290 }} placeholder='Loại hình đào tạo' onChange={handleChange} />
+          <Select
+            options={loaiHinhDaoTao}
+            style={{ width: 290 }}
+            value={loaiHinhDaoTao1}
+            placeholder='Loại hình đào tạo'
+            onChange={(value) => handleChange('loaiHinhDaoTao', value)} />
         </Form.Item>
-        <Form.Item label="Ngày sinh">
-          <DatePicker defaultValue={moment("2021-02-21", 'YYYY-MM-DD')} getPopupContainer={(trigger) => { console.log(trigger) }} placeholder='Ngày sinh' />
+
+        <Form.Item name="ngayVaoTruong" label="Ngày vào trường">
+          <DatePicker
+            onChange={(date, dateString) => handleChangeNgay('ngayVaoTruong', date, dateString)}
+            value={type === 'add' ? null : ngayVaoTruong}
+            placeholder='Ngày vào trường' />
         </Form.Item>
-        <Form.Item label="Ngày vào trường">
-          <DatePicker placeholder='Ngày vào trường' />
+        <Form.Item name="ngayVaoDoan" label="Ngày vào đoàn" >
+          <DatePicker
+            onChange={(date, dateString) => handleChangeNgay('ngayVaoDoan', date, dateString)}
+            value={type === 'add' ? null : moment(ngayVaoDoan, 'DD-MM-YYYY')}
+            placeholder='Ngày vào đoàn' />
         </Form.Item>
-        <Form.Item label="Ngày vào đoàn" >
-          <DatePicker placeholder='Ngày vào đoàn' />
-        </Form.Item>
-        <Form.Item label="Ngày vào Đảng" >
-          <DatePicker placeholder='Ngày vào Đảng' />
+        <Form.Item name="ngayVaoDang" label="Ngày vào Đảng" >
+          <DatePicker
+            onChange={(date, dateString) => handleChangeNgay('ngayVaoDang', date, dateString)}
+            value={type === 'add' ? null : moment(ngayVaoDang, 'DD-MM-YYYY')}
+            placeholder='Ngày vào Đảng' />
         </Form.Item>
 
         <Form.Item
@@ -215,9 +277,9 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
         <Form.Item
           name={"danToc"}
           label="Dân tộc"
-          defaultValue={"KINH"}
+
         >
-          <Input />
+          <Input defaultValue={"KINH"} />
         </Form.Item>
 
         <Form.Item
@@ -227,7 +289,12 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
           <Input />
         </Form.Item>
         <Form.Item label="Tôn giáo">
-          <Select options={tonGiao} style={{ width: 290 }} placeholder='Tôn giáo' onChange={handleChange} />
+          <Select
+            options={tonGiao}
+            style={{ width: 290 }}
+            value={tonGiao1}
+            placeholder='Tôn giáo'
+            onChange={(value) => handleChange("tonGiao", value)} />
         </Form.Item>
       </Form>
     );
@@ -245,20 +312,20 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
             maHoSo: _dataForm?.maHoSo,
             hoTenDem: _dataForm?.hoTenDem,
             ten: _dataForm?.ten,
-            ngaySinh: _dataForm?.ngaySinh,
-            // bacDaoTao:
-            // trangThai
-            // loaiHinhDaoTao
-            ngayVaoTruong: _dataForm?.ngayVaoTruong,
-            ngayVaoDoan: _dataForm?.ngayVaoDoan,
+            ngaySinh: ngaySinh,
+            bacDaoTao: bacDaoTao1,
+            trangThai: trangThai1,
+            loaiHinhDaoTao: loaiHinhDaoTao1,
+            ngayVaoTruong: ngayVaoTruong,
+            ngayVaoDoan: ngayVaoDoan,
             soDienThoai: _dataForm?.soDienThoai,
             diaChi: _dataForm?.diaChi,
             noiSinh: _dataForm?.noiSinh,
             hoKhauThuongTru: _dataForm?.hoKhauThuongTru,
-            // danToc
-            ngayVaoDang: _dataForm?.ngayVaoDang,
+            danToc: _dataForm?.danToc,
+            ngayVaoDang: ngayVaoDang,
             email: _dataForm?.email,
-            // tonGiao
+            tonGiao: tonGiao1
           }
         }
       }
@@ -269,26 +336,25 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
     actUpdateSinhVien({
       variables: {
         inputs: {
-            maHoSo: _dataForm?.maHoSo,
-            hoTenDem: _dataForm?.hoTenDem,
-            ten: _dataForm?.ten,
-            // ngaySinh: _dataForm?.ngaySinh,
-            // bacDaoTao:
-            // trangThai
-            // loaiHinhDaoTao
-            // ngayVaoTruong: _dataForm?.ngayVaoTruong,
-            // ngayVaoDoan: _dataForm?.ngayVaoDoan,
-            soDienThoai: _dataForm?.soDienThoai,
-            diaChi: _dataForm?.diaChi,
-            noiSinh: _dataForm?.noiSinh,
-            hoKhauThuongTru: _dataForm?.hoKhauThuongTru,
-            // danToc
-            // ngayVaoDang: _dataForm?.ngayVaoDang,
-            email: _dataForm?.email,
-            // tonGiao
-          
+          maHoSo: _dataForm?.maHoSo,
+          hoTenDem: _dataForm?.hoTenDem,
+          ten: _dataForm?.ten,
+          ngaySinh: ngaySinh,
+          bacDaoTao: bacDaoTao1,
+          trangThai: trangThai1,
+          loaiHinhDaoTao: loaiHinhDaoTao1,
+          ngayVaoTruong: ngayVaoTruong,
+          ngayVaoDoan: ngayVaoDoan,
+          soDienThoai: _dataForm?.soDienThoai,
+          diaChi: _dataForm?.diaChi,
+          noiSinh: _dataForm?.noiSinh,
+          hoKhauThuongTru: _dataForm?.hoKhauThuongTru,
+          danToc: _dataForm?.danToc,
+          ngayVaoDang: ngayVaoDang,
+          email: _dataForm?.email,
+          tonGiao: tonGiao1
         },
-        maSinhVien:_dataForm?.maSinhVien
+        maSinhVien: _dataForm?.maSinhVien
       }
     })
   }
@@ -300,7 +366,7 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
       onCancel={() => closeModal(false)}
       width={1000}
       onOk={type === 'add' ? handleAddSinhVien : handleUpdateSinhVien}
-      conformLoading={loadingSinhVien || lodingUpdateSinhVien}
+      onCreateComplete={loadingSinhVien || lodingUpdateSinhVien}
     >
       {renderForm()}
     </Modal>

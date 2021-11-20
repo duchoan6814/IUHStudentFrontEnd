@@ -45,6 +45,7 @@ const ModalAddLopHocPhan = ({ visible, closeModal, type, data, onCompleteAction 
             return;
         }
         form.setFieldsValue({
+            lopId: data.lopId,
             tenLop: data.tenLop,
             khoaHoc: data.khoaHoc,
         })
