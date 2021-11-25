@@ -1,159 +1,147 @@
-import React, { useState } from "react";
-import { Table, Button, Select, Modal } from "antd";
+import React, { useEffect, useState } from "react";
+import { Table, Button, Select } from "antd";
 
 import ModalAddSinhVien from "./FormAddStudent";
 import "./SinhVien.scss";
+import { useQuery } from "@apollo/client";
 
+import { getSinhVienFragment } from "./fragment";
+import queries from "core/graphql";
+import { getKhoafragment } from "components/Khoa/fragment";
 
-
-
+const getSinhVienQuery = queries.query.getSinhViens(getSinhVienFragment);
+const getKhoaQuery = queries.query.getKhoas(getKhoafragment);
 
 const SinhVienComponent = () => {
+
+  const { data: dataGetSinhViens, loading: loadingGetSinhViens } = useQuery(getSinhVienQuery);
+  const { data: dataGetKhoas} = useQuery(getKhoaQuery);
+
   const [visibleModal1, setVisibleModal1] = useState(false);
   const [visibleModal, setVisibleModal] = useState(false);
   const [sinhVien, setSinhVien] = useState({});
+  const [data, setDataSinhVien] = useState([]);
+  const [dataKhoa,setDataKhoa] = useState([]);
+  const [currentKhoa, setCurrentKhoa] = useState({});
+
   const columns = [
     {
       title: "ID",
       width: 50,
-      dataIndex: "id",
-      key: "id",
+      dataIndex: "sinhVienId",
+      key: "sinhVienId",
       fixed: "left",
     },
     {
       title: "MSSV",
       width: 100,
-      dataIndex: "mssv",
-      key: "mssv",
+      dataIndex: "maSinhVien",
+      key: "maSinhVien",
       fixed: "left",
     },
     {
-      title: "Họ tên",
-      width: 250,
-      dataIndex: "name",
-      key: "name",
+      title: "Họ tên đệm",
+      width: 200,
+      dataIndex: "hoTenDem",
+      key: "hoTenDem",
       fixed: "left",
     },
-
     {
-      title: "Số điện thoại",
-      dataIndex: "sdt",
-      key: "sdt",
-      width: 150,
-    },
-    {
-      title: "CMND",
-      dataIndex: "cmnd",
-      key: "cmnd",
-      width: 150,
-    },
-    {
-      title: "Khoa",
-      dataIndex: "khoa",
-      key: "khoa",
-      width: 200,
-    },
-    {
-      title: "Chuyên ngành",
-      dataIndex: "chuyenNganh",
-      key: "chuyenNganh",
-      width: 230,
-    },
-    {
-      title: "Bậc đào tạo",
-      dataIndex: "bacDaoTao",
-      key: "bacDaoTao",
-      width: 150,
-    },
-    {
-      title: "Khóa học",
-      dataIndex: "khoaHoc",
-      key: "khoaHoc",
-      width: 150,
-    },
-    {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-      width: 200,
-    },
-    {
-      title: "Mã hồ sơ",
-      dataIndex: "mahs",
-      key: "mahs",
-      width: 100,
+      title: "Tên",
+      width: 80,
+      dataIndex: "ten",
+      key: "ten",
+      fixed: "left",
     },
     {
       title: "Ngày sinh",
+      width: 250,
       dataIndex: "ngaySinh",
       key: "ngaySinh",
-      width: 100,
     },
     {
-      title: "Ngày vào trường",
-      dataIndex: "ngayVaoTruong",
-      key: "ngayVaoTruong",
-      width: 150,
+      title: "Bậc đào tạo",
+      width: 250,
+      dataIndex: "bacDaoTao",
+      key: "bacDaoTao",
     },
     {
-      title: "Ngày vào đoàn",
-      dataIndex: "ngayVaoDoan",
-      key: "ngayVaoDoan",
-      width: 150,
-    },
-    {
-      title: "Ngày vào Đảng",
-      dataIndex: "ngayVaoDang",
-      key: "ngayVaoDang",
-      width: 150,
-    },
-    {
-      title: "Mã khu vực",
-      dataIndex: "maKhuVuc",
-      key: "maKhuVuc",
-      width: 120,
-    },
-    {
-      title: "Địa chỉ liên hệ",
-      dataIndex: "diaChilh",
-      key: "diaChilh",
-      width: 500,
-    },
-    {
-      title: "Hộ khẩu thường trú",
-      dataIndex: "hoKhau",
-      key: "hoKhau",
-      width: 500,
-    },
-    {
-      title: "Trạng thái học tập",
-      dataIndex: "trangThaiHocTap",
-      key: "trangThaiHocTap",
-      width: 150,
+      title: "Trạng thái",
+      width: 250,
+      dataIndex: "trangThai",
+      key: "trangThai",
     },
     {
       title: "Loại hình đào tạo",
+      width: 250,
       dataIndex: "loaiHinhDaoTao",
       key: "loaiHinhDaoTao",
-      width: 150,
+    },
+    {
+      title: "Ngày vào trường",
+      width: 250,
+      dataIndex: "ngayVaoTruong",
+      key: "ngayVaoTruong",
+    },
+    {
+      title: "Ngày vào đoàn",
+      width: 250,
+      dataIndex: "ngayVaoDoan",
+      key: "ngayVaoDoan",
+    },
+    {
+      title: "Giới tính",
+      width: 250,
+      dataIndex: "gioiTinh",
+      key: "gioiTinh",
+    },
+    {
+      title: "Số điện thoại",
+      width: 250,
+      dataIndex: "soDienThoai",
+      key: "soDienThoai",
+    },
+    {
+      title: "Địa chỉ",
+      width: 250,
+      dataIndex: "diaChi",
+      key: "diaChi",
+    },
+    {
+      title: "Nơi sinh",
+      width: 250,
+      dataIndex: "noiSinh",
+      key: "noiSinh",
+    },
+    {
+      title: "Hộ khẩu thường trú",
+      width: 250,
+      dataIndex: "hoKhauThuongTru",
+      key: "hoKhauThuongTru",
     },
     {
       title: "Dân tộc",
+      width: 250,
       dataIndex: "danToc",
       key: "danToc",
-      width: 150,
+    },
+    {
+      title: "Ngày vào đảng",
+      width: 250,
+      dataIndex: "ngayVaoDang",
+      key: "ngayVaoDang",
+    },
+    {
+      title: "Email",
+      width: 250,
+      dataIndex: "email",
+      key: "email",
     },
     {
       title: "Tôn giáo",
+      width: 250,
       dataIndex: "tonGiao",
       key: "tonGiao",
-      width: 150,
-    },
-    {
-      title: "Đối tượng",
-      dataIndex: "doiTuong",
-      key: "doiTuong",
-      width: 150,
     },
     {
       title: "Thao tác",
@@ -166,51 +154,48 @@ const SinhVienComponent = () => {
           <Button danger onClick={() => handlerEditButton(e)}>
             Chỉnh sửa
           </Button>
-          <Button style={{marginLeft:10}}>Xóa</Button>
+          <Button style={{ marginLeft: 10 }}>Xóa</Button>
         </div>
       ),
     },
   ];
+
   const handlerEditButton = (sinhVien) => {
     setSinhVien(sinhVien);
     setVisibleModal1(true);
   };
-  const data = [];
-  for (let i = 0; i < 100; i++) {
-    data.push({
-      key: i,
-      id: `${i}`,
-      name: `Nguyễn Hoàng Anh Nhân ${i}`,
-      mssv: 18050711,
-      address: `London Park no. ${i}`,
-      sdt: `023191233${i}`,
-      cmnd: `2138631${i}`,
-      khoa: `Khoa Công nghệ thông tin`,
-      chuyenNganh: `Kỹ thuật phần mềm`,
-      bacDaoTao: `Đại học`,
-      khoaHoc: `2018-2022`,
-      email: `email`,
-      mahs: `${i}`,
-      ngaySinh: `1/2/2000`,
-      ngayVaoTruong: `1/2/2017`,
-      ngayVaoDoan: `1/2/2017`,
-      ngayVaoDang: `1/2/2020`,
-      maKhuVuc: 1,
-      diaChilh: `11 Phan Huy Ích,p7,Quân Bình Thạnh,Tp.Hồ Chí Minh, Việt Nam`,
-      hoKhau: `11 Phan Huy Ích,p7,Quân Bình Thạnh,Tp.Hồ Chí Minh, Việt Nam`,
-      trangThaiHocTap: `Đang học`,
-      loaiHinhDaoTao: `Tiên tiến`,
-      danToc: `Kinh`,
-      tonGiao: `Phật`,
-      doiTuong: `Không`,
-    });
+
+  const handleChangeKhoa = (e) => {
+    const _currentKhoa = dataKhoa?.find(item => item?.khoaVienId === e);
+    setCurrentKhoa(_currentKhoa);
   }
 
+  useEffect(() => {
+    const _listSinhVien = dataGetSinhViens?.getSinhViens?.data;
+    setDataSinhVien(_listSinhVien);
+
+  }, [dataGetSinhViens])
+  useEffect(()=>{
+    const _listKhoa = dataGetKhoas?.getKhoas?.data;
+    setDataKhoa(_listKhoa);
+    setCurrentKhoa(_listKhoa?.[0])
+  }, [dataGetKhoas?.getKhoas?.data])
+
+  const handleCreateSinhVien = (e) => {
+    setVisibleModal(false);
+    let _data = data;
+    _data = [e, ..._data];
+    setDataSinhVien(_data);
+  }
+  const handleUpdateSinhVien = (e) => {
+    setVisibleModal1(false);
+    let _data = data;
+    _data = [e, ..._data];
+    setDataSinhVien(_data);
+  }
   const { Option } = Select;
-  const khoaData = ["CNTT", "Công nghệ may", "Kinh doanh quốc tế"];
-
-  React.useState(khoaData[0]);
-
+  // get list khoa
+  
   return (
     <div className="sinhvien">
       <h1>DANH SÁCH SINH VIÊN</h1>
@@ -218,11 +203,12 @@ const SinhVienComponent = () => {
         <span>Khoa</span>
         <Select
           className="ant-select-selector"
-          defaultValue={khoaData[0]}
+          value={currentKhoa?.tenKhoaVien}
           style={{ width: 300 }}
+          onChange={handleChangeKhoa}
         >
-          {khoaData.map((khoaData) => (
-            <Option key={khoaData}>{khoaData}</Option>
+          {dataKhoa?.map((khoaData) => (
+            <Option key={khoaData?.khoaVienId}>{khoaData?.tenKhoaVien}</Option>
           ))}
         </Select>
       </div>
@@ -243,6 +229,7 @@ const SinhVienComponent = () => {
         type="add"
         visible={visibleModal}
         closeModal={setVisibleModal}
+        onCreateComplete={(e)=>{handleCreateSinhVien(e)}}
       />
       <ModalAddSinhVien
         type="sua"
@@ -251,6 +238,7 @@ const SinhVienComponent = () => {
         data={
           sinhVien
         }
+        onCreateComplete={(e)=>{handleUpdateSinhVien(e)}}
       />
     </div>
   );

@@ -1,154 +1,363 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Form, Input, DatePicker, Select } from "antd";
+import { Modal, Form, Input, DatePicker, Select, notification } from "antd";
+import { useMutation } from "@apollo/client";
+import { get, isEmpty } from "lodash";
+import queries from "core/graphql";
+import moment from 'moment';
+import 'moment/locale/zh-cn';
 
-import { isEmpty } from "lodash";
+const createSinhVienMutation = queries.mutation.createSinhVien();
+const updateSinhVienMutation = queries.mutation.updateSinhVien();
 const { Option, OptGroup } = Select;
 
-const ModalStudent = ({ visible, closeModal, type, data }) => {
+
+
+const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => {
   const layout = {
     labelCol: { span: 4 },
     wrapperCol: { span: 24 },
   };
+  const [ngaySinh, setngaySinh] = useState();
+  const [ngayVaoDoan, setngayVaoDoan] = useState();
+  const [ngayVaoTruong, setngayVaoTruong] = useState();
+  const [ngayVaoDang, setngayVaoDang] = useState();
+  const [trangThai1, settrangThai] = useState();
+  const [bacDaoTao1, setbacDaoTao] = useState();
+  const [loaiHinhDaoTao1, setloaiHinhDaoTao] = useState();
+  const [tonGiao1, settonGiao] = useState();
+
+  const [actUpdateSinhVien, { data: dataUpdateSinhVien, loading: lodingUpdateSinhVien }] = useMutation(updateSinhVienMutation,
+    {
+      onCompleted: (dataReturn) => {
+        const errors = get(dataReturn, 'updateSinhVien.errors', []);
+        if (!isEmpty(errors)) {
+          return errors.map(item =>
+            notification["error"]({
+              message: item?.message,
+            })
+          )
+        }
+
+        const _data = get(dataReturn, 'updateSinhVien.data', {});
+
+        if (!isEmpty(_data)) {
+          onCreateComplete(_data)
+          return;
+        }
+
+        notification["error"]({
+          message: "Loi ket noi",
+        })
+      }
+    });
+  const [actCreateSinhVien, { data: dataCreateSinhVien, loading: loadingSinhVien }] = useMutation(createSinhVienMutation,
+    {
+      onCompleted: (dataReturn) => {
+        const errors = get(dataReturn, 'createSinhVien.errors', []);
+        if (!isEmpty(errors)) {
+          return errors.map(item =>
+            notification["error"]({
+              message: item?.message,
+            })
+          )
+        }
+
+        const _data = get(dataReturn, 'createSinhVien.data', {});
+
+        if (!isEmpty(_data)) {
+          onCreateComplete(_data)
+          return;
+        }
+
+        notification["error"]({
+          message: "Loi ket noi",
+        })
+      }
+    });
   const [form] = Form.useForm();
   useEffect(() => {
     if (isEmpty(data)) {
       return;
     }
     form.setFieldsValue({
-      ID: data.id,
-      MSSV: data.mssv,
+      sinhVienId: data.sinhVienId,
+      maSinhVien: data.maSinhVien,
       name: data.name,
-      sdt: data.sdt,
-      cmnd: data.cmnd,
-      // khoa: data.khoa,
-      // chuyenNganh: data.chuyenNganh,
-      // bacDaoTao: data.bacDaoTao,
-      // khoaHoc: data.khoaHoc,
-      email: data.email,
-      mahs: data.mahs,
-      ngaySinh: data.ngaySinh,
-      ngayVaoTruong: data.ngayVaoTruong,
-      ngayVaoDoan: data.ngayVaoDoan,
-      ngayVaoDang: data.ngayVaoDang,
-      maKhuVuc: data.maKhuVuc,
-      diaChilh: data.diaChilh,
-      hoKhau: data.hoKhau,
-      trangThaiHocTap: data.trangThaiHocTap,
-      loaiHinhDaoTao: data.loaiHinhDaoTao,
+      maHoSo: data.maHoSo,
+      image: data.image,
+      hoTenDem: data.hoTenDem,
+      ten: data.ten,
+      gioiTinh: data.gioiTinh,
+      soDienThoai: data.soDienThoai,
+      diaChi: data.diaChi,
+      noiSinh: data.noiSinh,
+      hoKhauThuongTru: data.hoKhauThuongTru,
       danToc: data.danToc,
-      tonGiao: data.tonGiao,
-      doiTuong: data.doiTuong,
+      email: data.email,
     })
-  }, [data])
+    setngaySinh(data.ngaySinh);
+    setngayVaoDang(data.ngayVaoDang);
+    setngayVaoDoan(data.ngayVaoDoan);
+    setngayVaoTruong(data.ngayVaoTruong);
+    setbacDaoTao(data.bacDaoTao);
+    setloaiHinhDaoTao(data.loaiHinhDaoTao);
+    settrangThai(data.trangThai);
+    settonGiao(data.tonGiao);
+  }, [data]);
 
   const bacDaoTao = [
-    { value: 'Cd', label: 'Cao dang' },
-    { value: 'dh', label: 'Dai hoc' },
-    { value: 'tc', label: 'Trung cap' }
+    { value: 'CAO_DANG', label: 'CAO_DANG' },
+    { value: 'DAI_HOC', label: 'DAI_HOC' },
   ]
-  const khoaHoc = [
-    { value: 'k14', label: '2018-2022' },
-    { value: 'k13', label: '2019-2022' },
+  const trangThai = [
+    { value: 'DANG_HOC', label: 'DANG_HOC' },
+    { value: 'RA_TRUONG', label: 'RA_TRUONG' },
+    { value: 'BAO_LUU', label: 'BAO_LUU' },
+  ]
+  const loaiHinhDaoTao = [
+    { value: 'TIEN_TIEN', label: 'TIEN_TIEN' },
+    { value: 'DAI_TRA', label: 'DAI_TRA' },
+  ]
+  const tonGiao = [
+    { value: 'PHAT_GIAO', label: 'PHAT_GIAO' },
+    { value: 'KHONG', label: 'KHONG' },
+  ]
+  function handleChange(type, value) {
+    if (type === 'BacDaoTao') {
+      setbacDaoTao(value);
+    }
+    if (type === 'tonGiao') {
+      settonGiao(value);
+    }
+    if (type === 'loaiHinhDaoTao') {
+      setloaiHinhDaoTao(value);
+    }
+    if (type === 'trangThai') {
+      settrangThai(value);
+    }
+  }
 
-  ]
-  function handleChange(value) {
-    console.log(`selected ${value}`);
+  const handleChangeNgay = (type, date, dateString) => {
+    if (type === 'ngaySinh') {
+      setngaySinh(dateString);
+    }
+    if (type === 'ngayVaoTruong') {
+      setngayVaoTruong(dateString);
+    }
+    if (type === 'ngayVaoDang') {
+      setngayVaoDang(dateString);
+    }
+    if (type === 'ngayVaoDoan') {
+      setngayVaoDoan(dateString);
+    }
   }
   const renderForm = () => {
     return (
       <Form {...layout} form={form} name="nest-messages">
         <Form.Item
-          name={"ID"}
-          label="ID"
+          name={"sinhVienId"}
+          label="sinhVienId"
         >
           <Input disabled />
         </Form.Item>
         <Form.Item
-          name={"MSSV"}
+          name={"maSinhVien"}
           label="MSSV"
         >
           <Input />
         </Form.Item>
         <Form.Item
-          name={"name"}
-          label="Họ tên"
+          name={"maHoSo"}
+          label="Mã hồ sơ"
         >
           <Input />
         </Form.Item>
         <Form.Item
-          name={"sdt"}
+          name={"image"}
+          label="image"
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name={"hoTenDem"}
+          label="Họ tên đệm"
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name={"ten"}
+          label="Tên"
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item name="ngaySinh" label="Ngày sinh">
+          <DatePicker
+            onChange={(date, dateString) => handleChangeNgay('ngaySinh', date, dateString)}
+            value={type === 'add' ? null : moment(ngaySinh, 'DD-MM-YYYY')}
+            placeholder='Ngày sinh' />
+        </Form.Item>
+        <Form.Item label="Chuyên ngành">
+          <Select style={{ width: 200 }} placeholder='Chuyên ngành' onChange={handleChange}>
+            <OptGroup label="CNTT">
+              <Option value="jack">Ky thuat phan mem</Option>
+              <Option value="lucy">Khoa hoc du lieu</Option>
+            </OptGroup>
+          </Select>
+        </Form.Item>
+
+        <Form.Item label="Bậc đào tạo">
+          <Select
+            options={bacDaoTao}
+            style={{ width: 290 }}
+            value={bacDaoTao1}
+            placeholder='Bậc đào tạo'
+            onChange={(value) => handleChange('BacDaoTao', value)} />
+        </Form.Item>
+
+        <Form.Item label="Trạng thái">
+          <Select
+            options={trangThai}
+            style={{ width: 290 }}
+            value={trangThai1}
+            placeholder='Trạng thái'
+            onChange={(value) => handleChange('trangThai', value)} />
+        </Form.Item>
+        <Form.Item label="Loại hình đào tạo">
+          <Select
+            options={loaiHinhDaoTao}
+            style={{ width: 290 }}
+            value={loaiHinhDaoTao1}
+            placeholder='Loại hình đào tạo'
+            onChange={(value) => handleChange('loaiHinhDaoTao', value)} />
+        </Form.Item>
+
+        <Form.Item name="ngayVaoTruong" label="Ngày vào trường">
+          <DatePicker
+            onChange={(date, dateString) => handleChangeNgay('ngayVaoTruong', date, dateString)}
+            value={type === 'add' ? null : ngayVaoTruong}
+            placeholder='Ngày vào trường' />
+        </Form.Item>
+        <Form.Item name="ngayVaoDoan" label="Ngày vào đoàn" >
+          <DatePicker
+            onChange={(date, dateString) => handleChangeNgay('ngayVaoDoan', date, dateString)}
+            value={type === 'add' ? null : moment(ngayVaoDoan, 'DD-MM-YYYY')}
+            placeholder='Ngày vào đoàn' />
+        </Form.Item>
+        <Form.Item name="ngayVaoDang" label="Ngày vào Đảng" >
+          <DatePicker
+            onChange={(date, dateString) => handleChangeNgay('ngayVaoDang', date, dateString)}
+            value={type === 'add' ? null : moment(ngayVaoDang, 'DD-MM-YYYY')}
+            placeholder='Ngày vào Đảng' />
+        </Form.Item>
+
+        <Form.Item
+          name={"soDienThoai"}
           label="Số điện thoại"
         >
           <Input />
         </Form.Item>
         <Form.Item
-          name={"cmnd"}
-          label="CMND"
-        >
-          <Input />
-        </Form.Item>
-        <Select style={{ width: 200, margin: 10, marginLeft: 40 }} placeholder='Chuyên ngành' onChange={handleChange}>
-          <OptGroup label="CNTT">
-            <Option value="jack">Ky thuat phan mem</Option>
-            <Option value="lucy">Khoa hoc du lieu</Option>
-          </OptGroup>
-          <OptGroup label="Tai ngan">
-            <Option value="tcnh">Tai chinh ngan hang</Option>
-          </OptGroup>
-        </Select>
-        <Select options={bacDaoTao} style={{ width: 290, margin: 10, marginLeft: 40 }} placeholder='Bậc đào tạo' onChange={handleChange} />
-        <Select options={khoaHoc} style={{ width: 290, margin: 10, marginLeft: 40 }} placeholder='Khóa học' onChange={handleChange} />
-        <Form.Item
-          name={"email1"}
-          label="Email"
+          name={"diaChi"}
+          label="Địa chỉ"
         >
           <Input />
         </Form.Item>
         <Form.Item
-          name={"mahs"}
-          label="Mã hồ sơ"
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item label="Ngày sinh">
-          <DatePicker placeholder='Ngày sinh' />
-        </Form.Item>
-        <Form.Item label="Ngày vào trường">
-          <DatePicker placeholder='Ngày vào trường' />
-        </Form.Item>
-        <Form.Item label="Ngày vào đoàn" >
-          <DatePicker placeholder='Ngày vào đoàn' />
-        </Form.Item>
-        <Form.Item label="Ngày vào Đảng" >
-          <DatePicker placeholder='Ngày vào Đảng' />
-        </Form.Item>
-        <Form.Item
-          name={"maKhuVuc"}
-          label="Mã khu vực"
+          name={"noiSinh"}
+          label="Nơi sinh"
         >
           <Input />
         </Form.Item>
         <Form.Item
-          name={"diaChilh"}
-          label="Địa chỉ liên hệ"
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name={"hoKhau"}
+          name={"hoKhauThuongTru"}
           label="Hộ khẩu thường trú"
         >
           <Input />
         </Form.Item>
-        <Select options={khoaHoc} style={{ width: 290, margin: 10, marginLeft: 160 }} placeholder='Trang thái học tập' onChange={handleChange} />
-        <Select options={khoaHoc} style={{ width: 290, margin: 10, marginLeft: 160 }} placeholder='Loại hình đào tạo' onChange={handleChange} />
-        <Select options={khoaHoc} style={{ width: 290, margin: 10, marginLeft: 160 }} placeholder='Dân tộc' onChange={handleChange} />
-        <Select options={khoaHoc} style={{ width: 290, margin: 10, marginLeft: 160 }} placeholder='Tôn giáo' onChange={handleChange} />
-        <Select options={khoaHoc} style={{ width: 290, margin: 10, marginLeft: 160 }} placeholder='Đối tượng' onChange={handleChange} />
+        <Form.Item
+          name={"danToc"}
+          label="Dân tộc"
+
+        >
+          <Input defaultValue={"KINH"} />
+        </Form.Item>
+
+        <Form.Item
+          name={"email"}
+          label="Email"
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item label="Tôn giáo">
+          <Select
+            options={tonGiao}
+            style={{ width: 290 }}
+            value={tonGiao1}
+            placeholder='Tôn giáo'
+            onChange={(value) => handleChange("tonGiao", value)} />
+        </Form.Item>
       </Form>
     );
   };
-
+  const handleAddSinhVien = () => {
+    const _dataForm = form.getFieldsValue(true);
+    console.log("data", _dataForm);
+    actCreateSinhVien({
+      variables: {
+        inputs: {
+          username: _dataForm?.maSinhVien,
+          password: "123456",
+          sinhVien: {
+            maSinhVien: _dataForm?.maSinhVien,
+            maHoSo: _dataForm?.maHoSo,
+            hoTenDem: _dataForm?.hoTenDem,
+            ten: _dataForm?.ten,
+            ngaySinh: ngaySinh,
+            bacDaoTao: bacDaoTao1,
+            trangThai: trangThai1,
+            loaiHinhDaoTao: loaiHinhDaoTao1,
+            ngayVaoTruong: ngayVaoTruong,
+            ngayVaoDoan: ngayVaoDoan,
+            soDienThoai: _dataForm?.soDienThoai,
+            diaChi: _dataForm?.diaChi,
+            noiSinh: _dataForm?.noiSinh,
+            hoKhauThuongTru: _dataForm?.hoKhauThuongTru,
+            danToc: _dataForm?.danToc,
+            ngayVaoDang: ngayVaoDang,
+            email: _dataForm?.email,
+            tonGiao: tonGiao1
+          }
+        }
+      }
+    })
+  }
+  const handleUpdateSinhVien = () => {
+    const _dataForm = form.getFieldsValue(true);
+    actUpdateSinhVien({
+      variables: {
+        inputs: {
+          maHoSo: _dataForm?.maHoSo,
+          hoTenDem: _dataForm?.hoTenDem,
+          ten: _dataForm?.ten,
+          ngaySinh: ngaySinh,
+          bacDaoTao: bacDaoTao1,
+          trangThai: trangThai1,
+          loaiHinhDaoTao: loaiHinhDaoTao1,
+          ngayVaoTruong: ngayVaoTruong,
+          ngayVaoDoan: ngayVaoDoan,
+          soDienThoai: _dataForm?.soDienThoai,
+          diaChi: _dataForm?.diaChi,
+          noiSinh: _dataForm?.noiSinh,
+          hoKhauThuongTru: _dataForm?.hoKhauThuongTru,
+          danToc: _dataForm?.danToc,
+          ngayVaoDang: ngayVaoDang,
+          email: _dataForm?.email,
+          tonGiao: tonGiao1
+        },
+        maSinhVien: _dataForm?.maSinhVien
+      }
+    })
+  }
   return (
     <Modal
       title={type === 'add' ? 'Thêm sinh viên' : 'Sửa sinh viên'}
@@ -156,6 +365,8 @@ const ModalStudent = ({ visible, closeModal, type, data }) => {
       visible={visible}
       onCancel={() => closeModal(false)}
       width={1000}
+      onOk={type === 'add' ? handleAddSinhVien : handleUpdateSinhVien}
+      onCreateComplete={loadingSinhVien || lodingUpdateSinhVien}
     >
       {renderForm()}
     </Modal>
