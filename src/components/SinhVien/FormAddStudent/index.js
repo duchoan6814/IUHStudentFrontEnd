@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Form, Input, DatePicker, Select, notification } from "antd";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { get, isEmpty } from "lodash";
 import queries from "core/graphql";
 import moment from 'moment';
 import 'moment/locale/zh-cn';
+import { getKhoafragment } from "components/Khoa/fragment";
 
 const createSinhVienMutation = queries.mutation.createSinhVien();
 const updateSinhVienMutation = queries.mutation.updateSinhVien();
@@ -196,14 +197,7 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
             value={type === 'add' ? null : moment(ngaySinh, 'DD-MM-YYYY')}
             placeholder='Ngày sinh' />
         </Form.Item>
-        <Form.Item label="Chuyên ngành">
-          <Select style={{ width: 200 }} placeholder='Chuyên ngành' onChange={handleChange}>
-            <OptGroup label="CNTT">
-              <Option value="jack">Ky thuat phan mem</Option>
-              <Option value="lucy">Khoa hoc du lieu</Option>
-            </OptGroup>
-          </Select>
-        </Form.Item>
+        
 
         <Form.Item label="Bậc đào tạo">
           <Select

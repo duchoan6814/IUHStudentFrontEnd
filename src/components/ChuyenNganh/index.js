@@ -6,9 +6,12 @@ import queries from 'core/graphql';
 import { getChuyenNganhsFragment } from "./fragment";
 import { useMutation, useQuery } from "@apollo/client";
 import { get, isEmpty } from "lodash";
+import { getKhoafragment } from "components/Khoa/fragment";
 
 const getChuyenNganhsQuery = queries.query.getChuyenNganhs(getChuyenNganhsFragment);
 const deleteChuyenNganhMutation = queries.mutation.deleteChuyenNganh();
+const getKhoasQuery = queries.query.getKhoas(getKhoafragment);
+
 const ChuyenNganh = () => {
   const [visibleModal1, setVisibleModal1] = useState(false);
   const [visibleModal, setVisibleModal] = useState(false);
@@ -16,6 +19,7 @@ const ChuyenNganh = () => {
   const [dataChuyenNganhs, setDataGetChuyenNganhs] = useState([]);
   const { data: dataGetChuyenNganhs, loading: loadingGetChuyeNganhs } = useQuery(getChuyenNganhsQuery);
   const [actDeleteChuyenNganh, { data: dataDeleteChuyenNganh, loading: loadingDelteChuyenNganh }] = useMutation(deleteChuyenNganhMutation);
+  // const 
   const columns = [
     { title: 'Mã chuyên ngành', dataIndex: 'chuyenNganhId', key: 'maChuyenNganh', width: 200, },
     { title: 'Tên chuyên ngành', dataIndex: 'tenChuyenNganh', key: 'tenChuyenNganh', width: 400, },
@@ -117,34 +121,34 @@ const ChuyenNganh = () => {
     <Button className='ant-btn-primary' type="primary" onClick={() => setVisibleModal(true)}>+ Thêm chuyên ngành</Button>
     <Table
       columns={columns}
-      expandable={{
-        expandedRowRender: record => <div>
-          <div style={{ marginRight: 100, display: "flex", flexDirection: "row", alignItems: "center" }}>
-            <p style={{
-              width: 1200,
-              margin: 10,
-            }}>{record.tenChuyenNganh}</p>
-            <Button type="primary" danger style={{
-              width: 70,
-            }}>Xóa</Button>
-          </div>
+      // expandable={{
+      //   expandedRowRender: record => <div>
+      //     <div style={{ marginRight: 100, display: "flex", flexDirection: "row", alignItems: "center" }}>
+      //       <p style={{
+      //         width: 1200,
+      //         margin: 10,
+      //       }}>{record.tenChuyenNganh}</p>
+      //       <Button type="primary" danger style={{
+      //         width: 70,
+      //       }}>Xóa</Button>
+      //     </div>
 
-          <div style={{ marginRight: 100, display: "flex", flexDirection: "row", alignItems: "center" }}>
-            <AutoComplete
-              style={{
-                width: 1200,
-                margin: 10,
-              }}
-              options={options}
-              placeholder="Tìm kiếm môn học của chuyên ngành"
-              filterOption={(inputValue, option) =>
-                option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-              }
-            />
-            <Button type="primary" style={{ marginRight: 100, display: "flex", }}>Thêm</Button>
-          </div>
-        </div>
-      }}
+      //     <div style={{ marginRight: 100, display: "flex", flexDirection: "row", alignItems: "center" }}>
+      //       <AutoComplete
+      //         style={{
+      //           width: 1200,
+      //           margin: 10,
+      //         }}
+      //         options={options}
+      //         placeholder="Tìm kiếm môn học của chuyên ngành"
+      //         filterOption={(inputValue, option) =>
+      //           option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+      //         }
+      //       />
+      //       <Button type="primary" style={{ marginRight: 100, display: "flex", }}>Thêm</Button>
+      //     </div>
+      //   </div>
+      // }}
       dataSource={dataChuyenNganhs}
     />
     <ModalAddChuyenNganh

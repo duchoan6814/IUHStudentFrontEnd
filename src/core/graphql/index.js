@@ -21,6 +21,9 @@ import deleteChuyenNganh from "./deleteChuyenNganh";
 import createHocKy from "./createHocKy";
 import updateHocKy from "./updateHocKy";
 import deleteHocKy from "./deleteHocKy";
+import getNamHocWithKhoaVienId from "./getNamHocWithKhoaVienId";
+import getSinhVienWithKhoaVienIdAndNgayVaoTruong from "./getSinhVienWithKhoaVienIdAndNgayVaoTruong";
+import getSinhVienWithKhoaVienId from "./getSinhVienWithKhoaVienId";
 const query = {
   ...Login.query,
   ...GetProfile.query,
@@ -30,6 +33,9 @@ const query = {
   ...getMonHocs.query,
   ...getHocKys.query,
   ...getChuyenNganhs.query,
+  ...getNamHocWithKhoaVienId.query,
+  ...getSinhVienWithKhoaVienIdAndNgayVaoTruong.query,
+  ...getSinhVienWithKhoaVienId.query,
 };
 
 const mutation = {
