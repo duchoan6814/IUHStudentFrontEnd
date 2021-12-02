@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button, Select, notification } from "antd";
-
+import * as XLSX from 'xlsx';
 import ModalAddSinhVien from "./FormAddStudent";
 import "./SinhVien.scss";
-import { useLazyQuery, useQuery } from "@apollo/client";
-
+import { useLazyQuery, useQuery,useMutation } from "@apollo/client";
+import { get, isEmpty, reject } from "lodash";
 import { getSinhVienFragment } from "./fragment";
 import queries from "core/graphql";
 import { getKhoafragment } from "components/Khoa/fragment";
@@ -26,7 +26,8 @@ const SinhVienComponent = () => {
   const [currentKhoa, setCurrentKhoa] = useState([]);
   const [currentNamVaoTruong, setCurrentNamVaoTruong] = useState([]);
   const [dataNamVaoTruong, setDataNamVaoTruong] = useState([]);
-
+  
+  const createSinhVienMutation = queries.mutation.createSinhVien();
   const { data: dataGetSinhViens, loading: loadingGetSinhViens } = useQuery(getSinhVienWithKhoaVienIdQuery, {
     variables: {
       khoaVienId: currentKhoa?.khoaVienId,
@@ -39,14 +40,39 @@ const SinhVienComponent = () => {
       khoaVienId: currentKhoa?.khoaVienId,
     }
   });
-  const [actGetSinhVienWithNam, { data: dataGetSinhViensWithNam, loading: loadingGetSinhViensWithNam }] = useLazyQuery(getSinhVienWithKhoaVienIdAndNgayVaoTruongQuery,{
-    onCompleted:(data)=>{
+  const [actGetSinhVienWithNam, { data: dataGetSinhViensWithNam, loading: loadingGetSinhViensWithNam }] = useLazyQuery(getSinhVienWithKhoaVienIdAndNgayVaoTruongQuery, {
+    onCompleted: (data) => {
       const _listSinhVien = data?.getSinhVienWithKhoaVienIdAndNgayVaoTruong?.data;
       console.log(_listSinhVien);
       setDataSinhVien(_listSinhVien);
     }
   });
+  const [actCreateSinhVien, { data: dataCreateSinhVien, loading: loadingSinhVien }] = useMutation(createSinhVienMutation,
+    {
+      onCompleted: (dataReturn) => {
+        const errors = get(dataReturn, 'createSinhVien.errors', []);
+        if (!isEmpty(errors)) {
+          return errors.map(item =>
+            notification["error"]({
+              message: 'Thông báo',
+              description: item?.message,
+            })
+          )
+        }
 
+        const _data = get(dataReturn, 'createSinhVien.data', {});
+
+        const status = get(dataReturn, 'createSinhVien.status', {})
+        if (!isEmpty(_data)) {
+          handleCreateSinhVien(_data);
+          return;
+        }
+
+        notification["error"]({
+          message: "Loi ket noi",
+        })
+      }
+    });
   const columns = [
     {
       title: "ID",
@@ -216,6 +242,12 @@ const SinhVienComponent = () => {
     let _data = data;
     _data = [e, ..._data];
     setDataSinhVien(_data);
+    let count =_data.length-data.length;
+    console.log("Count", count);
+    notification.open({
+      message: 'Thông báo',
+      description: `Thêm ${count} sinh viên`,
+    })
   }
   const handleUpdateSinhVien = (e) => {
     setVisibleModal1(false);
@@ -224,16 +256,65 @@ const SinhVienComponent = () => {
     setDataSinhVien(_data);
   }
   const onClickNam = (value, option) => {
-     actGetSinhVienWithNam({
+    actGetSinhVienWithNam({
       variables: {
         khoaVienId: currentKhoa?.khoaVienId,
         ngayVaoTruong: value,
       }
     })
-   
+
   }
   const { Option } = Select;
-
+  const readExcel = (file) => {
+    const promise = new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsArrayBuffer(file);
+      fileReader.onload = (e) => {
+        const bufferArray = e.target.result;
+        const wb = XLSX.read(bufferArray, { type: 'buffer' });
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
+        const data = XLSX.utils.sheet_to_json(ws);
+        resolve(data);
+      };
+      fileReader.onerror = (error) => {
+        reject(error);
+      }
+    });
+    promise.then((d) => {
+      d.map((_dataForm) => {
+       
+        actCreateSinhVien({
+          variables: {
+            inputs: {
+              username: _dataForm?.username,
+              password: "123456",
+              sinhVien: {
+                maSinhVien: _dataForm?.maSinhVien,
+                maHoSo: _dataForm?.maHoSo,
+                hoTenDem: _dataForm?.hoTenDem,
+                ten: _dataForm?.ten,
+                ngaySinh: _dataForm?.ngaySinh,
+                bacDaoTao: _dataForm?.bacDaoTao1,
+                trangThai: _dataForm?.trangThai1,
+                loaiHinhDaoTao: _dataForm?.loaiHinhDaoTao1,
+                ngayVaoTruong: _dataForm?.ngayVaoTruong,
+                ngayVaoDoan: _dataForm?.ngayVaoDoan,
+                soDienThoai: _dataForm?.soDienThoai,
+                diaChi: _dataForm?.diaChi,
+                noiSinh: _dataForm?.noiSinh,
+                hoKhauThuongTru: _dataForm?.hoKhauThuongTru,
+                danToc: _dataForm?.danToc,
+                ngayVaoDang: _dataForm?.ngayVaoDang,
+                email: _dataForm?.email,
+                tonGiao: _dataForm?.tonGiao1
+              }
+            }
+          }
+        })
+      })
+    })
+  }
   return (
     <div className="sinhvien">
       <h1>DANH SÁCH SINH VIÊN</h1>
@@ -269,6 +350,12 @@ const SinhVienComponent = () => {
       >
         + Thêm sinh viên
       </Button>
+      <div>
+        <input type="file" onChange={(e) => {
+          const file = e.target.files[0];
+          readExcel(file);
+        }} />
+      </div>
       <Table
         columns={columns}
         dataSource={data}
