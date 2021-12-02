@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Modal, Form, Input, notification } from "antd";
+import { Modal, Form, Input, notification, Button } from "antd";
 
 import { isEmpty } from "lodash";
 import { useMutation } from '@apollo/client';
@@ -22,15 +22,20 @@ const ModalAddLopHocPhan = ({ visible, closeModal, type, data, onCompleteAction 
                 if (!isEmpty(errors)) {
                     return errors.map(item =>
                         notification["error"]({
-                            message: item?.message,
+                            message: `Thông báo`,
+                            description: item?.message,
                         })
                     )
                 }
 
                 const _data = get(dataReturn, 'createLop.data', {});
-
+                const status = get(dataReturn, 'createLop.status', {})
                 if (!isEmpty(_data)) {
-                    onCompleteAction(_data)
+                    onCompleteAction(_data);
+                    notification.open({
+                        message: 'Thông báo',
+                        description: status,
+                    })
                     return;
                 }
 
@@ -67,7 +72,8 @@ const ModalAddLopHocPhan = ({ visible, closeModal, type, data, onCompleteAction 
     }
     const renderForm = () => {
         return (
-            <Form {...layout} form={form} name="nest-messages">
+
+            <Form {...layout} onFinish={type === 'add' ? handleAddLop : handleEditLop} form={form} name="nest-messages">
                 <Form.Item
                     name={"lopId"}
                     label="Lop ID"
@@ -86,7 +92,11 @@ const ModalAddLopHocPhan = ({ visible, closeModal, type, data, onCompleteAction 
                 >
                     <Input />
                 </Form.Item>
-
+                <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                    <Button type="primary" htmlType="submit">
+                        {type === 'add' ? "Thêm" : "Sửa"}
+                    </Button>
+                </Form.Item>
             </Form>
         );
     };
@@ -97,7 +107,7 @@ const ModalAddLopHocPhan = ({ visible, closeModal, type, data, onCompleteAction 
             visible={visible}
             onCancel={() => closeModal(false)}
             width={1000}
-            onOk={type === 'add' ? handleAddLop : handleEditLop}
+            footer={null}
         >
             {renderForm()}
         </Modal>

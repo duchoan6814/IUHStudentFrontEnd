@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Form, Input, DatePicker, Select, notification } from "antd";
-import { useMutation } from "@apollo/client";
+import { Modal, Form, Input, DatePicker, Select, notification, Button } from "antd";
+import { useMutation, useQuery } from "@apollo/client";
 import { get, isEmpty } from "lodash";
 import queries from "core/graphql";
 import moment from 'moment';
 import 'moment/locale/zh-cn';
+import { getKhoafragment } from "components/Khoa/fragment";
 
 const createSinhVienMutation = queries.mutation.createSinhVien();
 const updateSinhVienMutation = queries.mutation.updateSinhVien();
@@ -33,20 +34,26 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
         if (!isEmpty(errors)) {
           return errors.map(item =>
             notification["error"]({
-              message: item?.message,
+              message: 'Thông báo',
+              description: item?.message,
             })
           )
         }
 
         const _data = get(dataReturn, 'updateSinhVien.data', {});
-
+        const status = get(dataReturn, 'updateSinhVien.status', {})
         if (!isEmpty(_data)) {
-          onCreateComplete(_data)
+          onCreateComplete(_data);
+          notification.open({
+            message: 'Thông báo',
+            description: status,
+          })
           return;
         }
 
         notification["error"]({
-          message: "Loi ket noi",
+          message: 'Thông báo',
+          description: "Loi ket noi",
         })
       }
     });
@@ -57,15 +64,21 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
         if (!isEmpty(errors)) {
           return errors.map(item =>
             notification["error"]({
-              message: item?.message,
+              message: 'Thông báo',
+              description: item?.message,
             })
           )
         }
 
         const _data = get(dataReturn, 'createSinhVien.data', {});
 
+        const status = get(dataReturn, 'createSinhVien.status', {})
         if (!isEmpty(_data)) {
-          onCreateComplete(_data)
+          onCreateComplete(_data);
+          notification.open({
+            message: 'Thông báo',
+            description: status,
+          })
           return;
         }
 
@@ -153,7 +166,11 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
   }
   const renderForm = () => {
     return (
-      <Form {...layout} form={form} name="nest-messages">
+      <Form {...layout}
+        onFinish={type === 'add' ? handleAddSinhVien : handleUpdateSinhVien}
+        form={form}
+        name="nest-messages"
+      >
         <Form.Item
           name={"sinhVienId"}
           label="sinhVienId"
@@ -163,12 +180,14 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
         <Form.Item
           name={"maSinhVien"}
           label="MSSV"
+          rules={[{ required: true, message: 'Yêu cầu nhập mã sinh viên!' }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           name={"maHoSo"}
           label="Mã hồ sơ"
+          rules={[{ required: true, message: 'Yêu cầu nhập mã hồ sơ!' }]}
         >
           <Input />
         </Form.Item>
@@ -181,12 +200,14 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
         <Form.Item
           name={"hoTenDem"}
           label="Họ tên đệm"
+          rules={[{ required: true, message: 'Yêu cầu nhập họ tên đệm!' }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           name={"ten"}
           label="Tên"
+          rules={[{ required: true, message: 'Yêu cầu nhập tên sinh viên!' }]}
         >
           <Input />
         </Form.Item>
@@ -196,14 +217,7 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
             value={type === 'add' ? null : moment(ngaySinh, 'DD-MM-YYYY')}
             placeholder='Ngày sinh' />
         </Form.Item>
-        <Form.Item label="Chuyên ngành">
-          <Select style={{ width: 200 }} placeholder='Chuyên ngành' onChange={handleChange}>
-            <OptGroup label="CNTT">
-              <Option value="jack">Ky thuat phan mem</Option>
-              <Option value="lucy">Khoa hoc du lieu</Option>
-            </OptGroup>
-          </Select>
-        </Form.Item>
+
 
         <Form.Item label="Bậc đào tạo">
           <Select
@@ -296,6 +310,11 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
             placeholder='Tôn giáo'
             onChange={(value) => handleChange("tonGiao", value)} />
         </Form.Item>
+        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+          <Button type="primary" htmlType="submit">
+            {type === 'add' ? "Thêm" : "Sửa"}
+          </Button>
+        </Form.Item>
       </Form>
     );
   };
@@ -358,14 +377,15 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
       }
     })
   }
+
   return (
     <Modal
       title={type === 'add' ? 'Thêm sinh viên' : 'Sửa sinh viên'}
       centered
       visible={visible}
+      footer={null}
       onCancel={() => closeModal(false)}
       width={1000}
-      onOk={type === 'add' ? handleAddSinhVien : handleUpdateSinhVien}
       onCreateComplete={loadingSinhVien || lodingUpdateSinhVien}
     >
       {renderForm()}

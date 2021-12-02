@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Form, Input, Select, notification } from "antd";
+import { Modal, Form, Input, Select, notification, Button } from "antd";
 import { get, isEmpty } from "lodash";
 import queries from 'core/graphql';
 import { useMutation } from "@apollo/client";
@@ -12,7 +12,7 @@ const ModalMonHoc = ({ visible, closeModal, type, data, onCreateComplete }) => {
     labelCol: { span: 4 },
     wrapperCol: { span: 24 },
   };
-  
+
 
   const [actCreateMonHoc, { data: dataCreateKhoa, loading: loadingCreateMonHoc }] = useMutation(createMonHocMutation,
     {
@@ -21,15 +21,21 @@ const ModalMonHoc = ({ visible, closeModal, type, data, onCreateComplete }) => {
         if (!isEmpty(errors)) {
           return errors.map(item =>
             notification["error"]({
-              message: item?.message,
+              message: 'Thông báo',
+              description: item?.message,
             })
           )
         }
 
         const _data = get(dataReturn, 'createMonHoc.data', {});
 
+        const status = get(dataReturn, 'createMonHoc.status', {})
         if (!isEmpty(_data)) {
-          onCreateComplete(_data)
+          onCreateComplete(_data);
+          notification.open({
+            message: 'Thông báo',
+            description: status,
+          })
           return;
         }
 
@@ -38,27 +44,33 @@ const ModalMonHoc = ({ visible, closeModal, type, data, onCreateComplete }) => {
         })
       }
     });
-  const [actUpdateMonHoc, { data: dataUpdateKhoa, loading: loadingUpdateMonHoc }] = useMutation(updateMonHocMutation,{
+  const [actUpdateMonHoc, { data: dataUpdateKhoa, loading: loadingUpdateMonHoc }] = useMutation(updateMonHocMutation, {
     onCompleted: (dataReturn) => {
       const errors = get(dataReturn, 'updateMonHoc.errors', []);
-        if(!isEmpty(errors)) {
-          return errors.map(item => 
-              notification["error"]({
-                message: item?.message,
-              })
-            )
-        }
+      if (!isEmpty(errors)) {
+        return errors.map(item =>
+          notification["error"]({
+            message: 'Thông báo',
+            description: item?.message,
+          })
+        )
+      }
 
-        const _data = get(dataReturn, 'updateMonHoc.data', {});
+      const _data = get(dataReturn, 'updateMonHoc.data', {});
 
-        if(!isEmpty(_data)) {
-          onCreateComplete(_data)
-          return;
-        }
-
-        notification["error"]({
-          message: "Loi ket noi",
+      const status = get(dataReturn, 'updateMonHoc.status', {})
+      if (!isEmpty(_data)) {
+        onCreateComplete(_data);
+        notification.open({
+          message: 'Thông báo',
+          description: status,
         })
+        return;
+      }
+
+      notification["error"]({
+        message: "Loi ket noi",
+      })
     }
   });
   const [form] = Form.useForm();
@@ -99,7 +111,7 @@ const ModalMonHoc = ({ visible, closeModal, type, data, onCreateComplete }) => {
   }
   const renderForm = () => {
     return (
-      <Form {...layout} form={form} name="nest-messages">
+      <Form {...layout} onFinish={type === 'add' ? handleAddMonHoc : handleEditMonHoc} form={form} name="nest-messages">
         <Form.Item
           name={"monHocId"}
           label="Mã năm học"
@@ -118,6 +130,11 @@ const ModalMonHoc = ({ visible, closeModal, type, data, onCreateComplete }) => {
         >
           <Input />
         </Form.Item>
+        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+          <Button type="primary" htmlType="submit">
+            {type === 'add' ? "Thêm" : "Sửa"}
+          </Button>
+        </Form.Item>
       </Form>
     );
   };
@@ -129,7 +146,7 @@ const ModalMonHoc = ({ visible, closeModal, type, data, onCreateComplete }) => {
       visible={visible}
       onCancel={() => closeModal(false)}
       width={1000}
-      onOk={type === 'add' ? handleAddMonHoc : handleEditMonHoc}
+      footer={null}
       onCreateComplete={loadingCreateMonHoc || loadingUpdateMonHoc}
     >
       {renderForm()}

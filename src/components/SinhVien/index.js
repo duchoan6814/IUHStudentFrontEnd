@@ -1,28 +1,51 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Select } from "antd";
+import { Table, Button, Select, notification } from "antd";
 
 import ModalAddSinhVien from "./FormAddStudent";
 import "./SinhVien.scss";
-import { useQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 
 import { getSinhVienFragment } from "./fragment";
 import queries from "core/graphql";
 import { getKhoafragment } from "components/Khoa/fragment";
+import { getNamHocWithKhoaVienIdFragment } from "./fragment.NamVaoTruong";
 
-const getSinhVienQuery = queries.query.getSinhViens(getSinhVienFragment);
+const getSinhVienWithKhoaVienIdQuery = queries.query.getSinhVienWithKhoaVienId(getSinhVienFragment);
 const getKhoaQuery = queries.query.getKhoas(getKhoafragment);
+const getNamHocWithKhoaVienIdQuery = queries.query.getNamHocWithKhoaVienId(getNamHocWithKhoaVienIdFragment);
+const getSinhVienWithKhoaVienIdAndNgayVaoTruongQuery = queries.query.getSinhVienWithKhoaVienIdAndNgayVaoTruong(getSinhVienFragment);
 
 const SinhVienComponent = () => {
 
-  const { data: dataGetSinhViens, loading: loadingGetSinhViens } = useQuery(getSinhVienQuery);
-  const { data: dataGetKhoas} = useQuery(getKhoaQuery);
 
   const [visibleModal1, setVisibleModal1] = useState(false);
   const [visibleModal, setVisibleModal] = useState(false);
   const [sinhVien, setSinhVien] = useState({});
   const [data, setDataSinhVien] = useState([]);
-  const [dataKhoa,setDataKhoa] = useState([]);
-  const [currentKhoa, setCurrentKhoa] = useState({});
+  const [dataKhoa, setDataKhoa] = useState([]);
+  const [currentKhoa, setCurrentKhoa] = useState([]);
+  const [currentNamVaoTruong, setCurrentNamVaoTruong] = useState([]);
+  const [dataNamVaoTruong, setDataNamVaoTruong] = useState([]);
+
+  const { data: dataGetSinhViens, loading: loadingGetSinhViens } = useQuery(getSinhVienWithKhoaVienIdQuery, {
+    variables: {
+      khoaVienId: currentKhoa?.khoaVienId,
+    }
+  });
+  const { data: dataGetKhoas } = useQuery(getKhoaQuery);
+
+  const { data: dataNamHoc, loading: loadingGetNamHoc } = useQuery(getNamHocWithKhoaVienIdQuery, {
+    variables: {
+      khoaVienId: currentKhoa?.khoaVienId,
+    }
+  });
+  const [actGetSinhVienWithNam, { data: dataGetSinhViensWithNam, loading: loadingGetSinhViensWithNam }] = useLazyQuery(getSinhVienWithKhoaVienIdAndNgayVaoTruongQuery,{
+    onCompleted:(data)=>{
+      const _listSinhVien = data?.getSinhVienWithKhoaVienIdAndNgayVaoTruong?.data;
+      console.log(_listSinhVien);
+      setDataSinhVien(_listSinhVien);
+    }
+  });
 
   const columns = [
     {
@@ -160,6 +183,24 @@ const SinhVienComponent = () => {
     },
   ];
 
+
+  useEffect(() => {
+    const _listSinhVien = dataGetSinhViens?.getSinhVienWithKhoaVienId?.data;
+    setDataSinhVien(_listSinhVien);
+  }, [dataGetSinhViens?.getSinhVienWithKhoaVienId?.data]);
+
+  useEffect(() => {
+    const _listKhoa = dataGetKhoas?.getKhoas?.data;
+    setDataKhoa(_listKhoa);
+    setCurrentKhoa(_listKhoa?.[3])
+  }, [dataGetKhoas?.getKhoas?.data]);
+
+  useEffect(() => {
+    const _listNam = dataNamHoc?.getNamHocWithKhoaVienId?.data;
+    setDataNamVaoTruong(_listNam);
+  }, [dataNamHoc?.getNamHocWithKhoaVienId?.data]);
+
+
   const handlerEditButton = (sinhVien) => {
     setSinhVien(sinhVien);
     setVisibleModal1(true);
@@ -169,17 +210,6 @@ const SinhVienComponent = () => {
     const _currentKhoa = dataKhoa?.find(item => item?.khoaVienId === e);
     setCurrentKhoa(_currentKhoa);
   }
-
-  useEffect(() => {
-    const _listSinhVien = dataGetSinhViens?.getSinhViens?.data;
-    setDataSinhVien(_listSinhVien);
-
-  }, [dataGetSinhViens])
-  useEffect(()=>{
-    const _listKhoa = dataGetKhoas?.getKhoas?.data;
-    setDataKhoa(_listKhoa);
-    setCurrentKhoa(_listKhoa?.[0])
-  }, [dataGetKhoas?.getKhoas?.data])
 
   const handleCreateSinhVien = (e) => {
     setVisibleModal(false);
@@ -193,14 +223,22 @@ const SinhVienComponent = () => {
     _data = [e, ..._data];
     setDataSinhVien(_data);
   }
+  const onClickNam = (value, option) => {
+     actGetSinhVienWithNam({
+      variables: {
+        khoaVienId: currentKhoa?.khoaVienId,
+        ngayVaoTruong: value,
+      }
+    })
+   
+  }
   const { Option } = Select;
-  // get list khoa
-  
+
   return (
     <div className="sinhvien">
       <h1>DANH SÁCH SINH VIÊN</h1>
       <div className="combox-sv">
-        <span>Khoa</span>
+        <span >Khoa</span>
         <Select
           className="ant-select-selector"
           value={currentKhoa?.tenKhoaVien}
@@ -209,6 +247,18 @@ const SinhVienComponent = () => {
         >
           {dataKhoa?.map((khoaData) => (
             <Option key={khoaData?.khoaVienId}>{khoaData?.tenKhoaVien}</Option>
+          ))}
+        </Select>
+        <span style={{ marginLeft: 30 }}>Năm vào trường</span>
+        <Select
+          className="ant-select-selector"
+          value={currentNamVaoTruong?.namHoc}
+          style={{ width: 300 }}
+          // onChange={handleChangeNamHoc}
+          onSelect={onClickNam}
+        >
+          {dataNamVaoTruong?.map((dataNam, index) => (
+            <Option onClick={onClickNam} key={dataNam?.namHoc}>{dataNam?.namHoc}</Option>
           ))}
         </Select>
       </div>
@@ -229,7 +279,7 @@ const SinhVienComponent = () => {
         type="add"
         visible={visibleModal}
         closeModal={setVisibleModal}
-        onCreateComplete={(e)=>{handleCreateSinhVien(e)}}
+        onCreateComplete={(e) => { handleCreateSinhVien(e) }}
       />
       <ModalAddSinhVien
         type="sua"
@@ -238,7 +288,7 @@ const SinhVienComponent = () => {
         data={
           sinhVien
         }
-        onCreateComplete={(e)=>{handleUpdateSinhVien(e)}}
+        onCreateComplete={(e) => { handleUpdateSinhVien(e) }}
       />
     </div>
   );
