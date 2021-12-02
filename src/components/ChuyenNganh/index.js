@@ -4,27 +4,37 @@ import './index.scss';
 import ModalAddChuyenNganh from './FormAddChuyenNganh';
 import queries from 'core/graphql';
 import { getChuyenNganhsFragment } from "./fragment";
-import { useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { get, isEmpty } from "lodash";
 import { getKhoafragment } from "components/Khoa/fragment";
 
 const getChuyenNganhsQuery = queries.query.getChuyenNganhs(getChuyenNganhsFragment);
 const deleteChuyenNganhMutation = queries.mutation.deleteChuyenNganh();
 const getKhoasQuery = queries.query.getKhoas(getKhoafragment);
-
+const getChuyenNganhWithKhoaVienIdQuery = queries.query.getChuyenNganhWithKhoaVienId(getChuyenNganhsFragment)
 const ChuyenNganh = () => {
   const [visibleModal1, setVisibleModal1] = useState(false);
   const [visibleModal, setVisibleModal] = useState(false);
   const [chuyenNganh, setChuyenNganh] = useState({});
   const [dataChuyenNganhs, setDataGetChuyenNganhs] = useState([]);
+  const [dataKhoa, setDataKhoa] = useState([]);
+  const [currentKhoa, setCurrentKhoa] = useState([]);
+
+  const { data: dataGetKhoas } = useQuery(getKhoasQuery);
+  const [actGetDataChuyenNganhWithKhoaVien, { data: getDataChuyenNganhWithKhoaVienId }] = useLazyQuery(getChuyenNganhWithKhoaVienIdQuery, {
+    onCompleted: (data) => {
+      const _listChuyenNganh = data?.getChuyenNganhWithKhoaVienId?.data;
+      setDataGetChuyenNganhs(_listChuyenNganh);
+    }
+  })
   const { data: dataGetChuyenNganhs, loading: loadingGetChuyeNganhs } = useQuery(getChuyenNganhsQuery);
   const [actDeleteChuyenNganh, { data: dataDeleteChuyenNganh, loading: loadingDelteChuyenNganh }] = useMutation(deleteChuyenNganhMutation);
-  // const 
+
   const columns = [
     { title: 'Mã chuyên ngành', dataIndex: 'chuyenNganhId', key: 'maChuyenNganh', width: 200, },
-    { title: 'Tên chuyên ngành', dataIndex: 'tenChuyenNganh', key: 'tenChuyenNganh', width: 400, },
-    { title: 'Số tín chỉ', dataIndex: 'soTinChi', key: 'soTinChi' },
-    { title: 'Khoa', dataIndex: 'khoa', key: 'khoa', width: 400, },
+    { title: 'Tên chuyên ngành', dataIndex: 'tenChuyenNganh', key: 'tenChuyenNganh', width: 700, },
+    // { title: 'Số tín chỉ', dataIndex: 'soTinChi', key: 'soTinChi' },
+    // { title: 'Khoa', dataIndex: 'khoa', key: 'khoa', width: 400, },
     {
       title: 'Action',
       key: 'x',
@@ -38,6 +48,19 @@ const ChuyenNganh = () => {
       ),
     },
   ];
+
+
+  useEffect(() => {
+    const _listChuyenNganh = dataGetChuyenNganhs?.getChuyenNganhs?.data;
+    setDataGetChuyenNganhs(_listChuyenNganh);
+  }, [dataGetChuyenNganhs]);
+  useEffect(() => {
+    const _listKhoa = dataGetKhoas?.getKhoas?.data;
+    setDataKhoa(_listKhoa);
+    setCurrentKhoa(_listKhoa?.[3])
+  }, [dataGetKhoas?.getKhoas?.data]);
+
+
   const handlerDeleteChuyenNganh = async (e) => {
     const _dataReutrn = await actDeleteChuyenNganh({
       variables: {
@@ -65,10 +88,6 @@ const ChuyenNganh = () => {
       return;
     }
   }
-  useEffect(() => {
-    const _listChuyenNganh = dataGetChuyenNganhs?.getChuyenNganhs?.data;
-    setDataGetChuyenNganhs(_listChuyenNganh);
-  }, [dataGetChuyenNganhs])
   const handleCrateChuyenNganhComplete = (e) => {
     setVisibleModal(false);
     let _data = dataChuyenNganhs;
@@ -92,29 +111,32 @@ const ChuyenNganh = () => {
 
     setDataGetChuyenNganhs(_data);
   }
+  const handleSelectKhoa = (value, option) => {
+    actGetDataChuyenNganhWithKhoaVien({
+      variables: {
+        khoaVienId: value,
+      }
+    })
+  }
   const { Option } = Select;
-  const khoaData = ["CNTT", "Công nghệ may", "Kinh doanh quốc tế"];
-  React.useState(khoaData[0]);
+
   const handlerEditButton = (chuyenNganh) => {
     setChuyenNganh(chuyenNganh);
     setVisibleModal1(true);
   };
-  const options = [
-    { value: 'Burns Bay Road' },
-    { value: 'Downing Street' },
-    { value: 'Wall Street' },
-  ];
   return (<div className='chuyenNganh'>
     <h1>DANH SÁCH CHUYÊN NGÀNH</h1>
     <div className="combox-sv">
       <span>Khoa</span>
       <Select
         className="ant-select-selector"
-        defaultValue={khoaData[0]}
+        value={currentKhoa?.tenKhoaVien}
         style={{ width: 300 }}
+        // onChange={handleChangeKhoa}
+        onSelect={handleSelectKhoa}
       >
-        {khoaData.map((khoaData) => (
-          <Option key={khoaData}>{khoaData}</Option>
+        {dataKhoa?.map((khoaData) => (
+          <Option key={khoaData?.khoaVienId}>{khoaData?.tenKhoaVien}</Option>
         ))}
       </Select>
     </div>

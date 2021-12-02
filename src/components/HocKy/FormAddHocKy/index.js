@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Form, Input, DatePicker, notification } from "antd";
+import { Modal, Form, Input, DatePicker, notification, Button } from "antd";
 import queries from 'core/graphql';
 import { get, isEmpty } from "lodash";
 import moment from "moment";
@@ -15,21 +15,26 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
   const [form] = Form.useForm();
   const [nambatDau, setnambatDau] = useState();
   const [namketThuc, setnamketThuc] = useState();
-  const [actCreateHocKy, { data: dataCreateHocKy, loading: loadingCreateHocKy }] = useMutation(createHocKyMutation,{
+  const [actCreateHocKy, { data: dataCreateHocKy, loading: loadingCreateHocKy }] = useMutation(createHocKyMutation, {
     onCompleted: (dataReturn) => {
       const errors = get(dataReturn, 'createHocKy.errors', []);
-      if(!isEmpty(errors)) {
-        return errors.map(item => 
-            notification["error"]({
-              message: item?.message,
-            })
-          )
+      if (!isEmpty(errors)) {
+        return errors.map(item =>
+          notification["error"]({
+            message: item?.message,
+          })
+        )
       }
 
       const _data = get(dataReturn, 'createHocKy.data', {});
 
-      if(!isEmpty(_data)) {
-        onCreateComplete(_data)
+      const status = get(dataReturn, 'createHocKy.status', {})
+      if (!isEmpty(_data)) {
+        onCreateComplete(_data);
+        notification.open({
+          message: 'Thông báo',
+          description: status,
+        })
         return;
       }
 
@@ -38,21 +43,26 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
       })
     }
   });
-  const [actUpdatehocKy,{data: dataUpdateHocKy,loading:loadingUpdateHocKy}]= useMutation(updateHocKyMutation,{
+  const [actUpdatehocKy, { data: dataUpdateHocKy, loading: loadingUpdateHocKy }] = useMutation(updateHocKyMutation, {
     onCompleted: (dataReturn) => {
       const errors = get(dataReturn, 'updateHocKy.errors', []);
-      if(!isEmpty(errors)) {
-        return errors.map(item => 
-            notification["error"]({
-              message: item?.message,
-            })
-          )
+      if (!isEmpty(errors)) {
+        return errors.map(item =>
+          notification["error"]({
+            message: item?.message,
+          })
+        )
       }
 
       const _data = get(dataReturn, 'updateHocKy.data', {});
 
-      if(!isEmpty(_data)) {
-        onCreateComplete(_data)
+      const status = get(dataReturn, 'updateHocKy.status', {})
+      if (!isEmpty(_data)) {
+        onCreateComplete(_data);
+        notification.open({
+          message: 'Thông báo',
+          description: status,
+        })
         return;
       }
 
@@ -66,8 +76,8 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
       return;
     }
     form.setFieldsValue({
-      hocKyId: data.hocKyId,
-      moTa: data.moTa,
+      hocKyId: data?.hocKyId,
+      moTa: data?.moTa,
     });
     setnambatDau(data.namBatDau);
     setnamketThuc(data.namKetThuc);
@@ -81,7 +91,11 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
 
   const renderForm = () => {
     return (
-      <Form {...layout} form={form} name="nest-messages">
+      <Form {...layout}
+      form={form}
+      onFinish={type === 'add' ? handleAddHocKy : handleUpdateHocKy}
+      name="nest-messages"
+      >
         <Form.Item
           name={"hocKyId"}
           label="Mã năm học"
@@ -106,6 +120,11 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
         >
           <Input />
         </Form.Item>
+        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+          <Button type="primary" htmlType="submit">
+          {type === 'add' ? "Thêm" : "Sửa"}
+          </Button>
+        </Form.Item>
       </Form>
     );
   };
@@ -124,11 +143,11 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
   const handleUpdateHocKy = () => {
     const _dataForm = form.getFieldsValue(true);
     actUpdatehocKy({
-      variables:{
-        inputs:{
+      variables: {
+        inputs: {
           namBatDau: nambatDau,
           namKetThuc: namketThuc,
-          moTa: _dataForm?.moTa,
+          // moTa: _dataForm?.moTa,
         },
         maHocKy: _dataForm?.hocKyId,
       }
@@ -141,8 +160,8 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
       visible={visible}
       onCancel={() => closeModal(false)}
       width={1000}
-      onOk={type === 'add' ? handleAddHocKy : handleUpdateHocKy}
-      onCreateComplete={loadingCreateHocKy|| loadingUpdateHocKy}
+      footer={null}
+      onCreateComplete={loadingCreateHocKy || loadingUpdateHocKy}
     >
       {renderForm()}
     </Modal>

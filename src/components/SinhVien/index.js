@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Select } from "antd";
+import { Table, Button, Select, notification } from "antd";
 
 import ModalAddSinhVien from "./FormAddStudent";
 import "./SinhVien.scss";
-import { useQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 
 import { getSinhVienFragment } from "./fragment";
 import queries from "core/graphql";
@@ -27,8 +27,8 @@ const SinhVienComponent = () => {
   const [currentNamVaoTruong, setCurrentNamVaoTruong] = useState([]);
   const [dataNamVaoTruong, setDataNamVaoTruong] = useState([]);
 
-  const { data: dataGetSinhViens, loading: loadingGetSinhViens } = useQuery(getSinhVienWithKhoaVienIdQuery,{
-    variables:{
+  const { data: dataGetSinhViens, loading: loadingGetSinhViens } = useQuery(getSinhVienWithKhoaVienIdQuery, {
+    variables: {
       khoaVienId: currentKhoa?.khoaVienId,
     }
   });
@@ -39,10 +39,11 @@ const SinhVienComponent = () => {
       khoaVienId: currentKhoa?.khoaVienId,
     }
   });
-  const { data: dataGetSinhViensWithNam, loading: loadingGetSinhViensWithNam } = useQuery(getSinhVienWithKhoaVienIdAndNgayVaoTruongQuery, {
-    variables: {
-      khoaVienId: currentKhoa?.khoaVienId,
-      ngayVaoTruong: currentNamVaoTruong?.namHoc,
+  const [actGetSinhVienWithNam, { data: dataGetSinhViensWithNam, loading: loadingGetSinhViensWithNam }] = useLazyQuery(getSinhVienWithKhoaVienIdAndNgayVaoTruongQuery,{
+    onCompleted:(data)=>{
+      const _listSinhVien = data?.getSinhVienWithKhoaVienIdAndNgayVaoTruong?.data;
+      console.log(_listSinhVien);
+      setDataSinhVien(_listSinhVien);
     }
   });
 
@@ -181,7 +182,7 @@ const SinhVienComponent = () => {
       ),
     },
   ];
- 
+
 
   useEffect(() => {
     const _listSinhVien = dataGetSinhViens?.getSinhVienWithKhoaVienId?.data;
@@ -199,7 +200,7 @@ const SinhVienComponent = () => {
     setDataNamVaoTruong(_listNam);
   }, [dataNamHoc?.getNamHocWithKhoaVienId?.data]);
 
-  
+
   const handlerEditButton = (sinhVien) => {
     setSinhVien(sinhVien);
     setVisibleModal1(true);
@@ -209,11 +210,7 @@ const SinhVienComponent = () => {
     const _currentKhoa = dataKhoa?.find(item => item?.khoaVienId === e);
     setCurrentKhoa(_currentKhoa);
   }
-  const handleChangeNamHoc = (e) => {
-    const _currentNamHoc = dataNamVaoTruong?.find(item => item?.namHoc === e)
-    setCurrentNamVaoTruong(_currentNamHoc);
-    
-  }
+
   const handleCreateSinhVien = (e) => {
     setVisibleModal(false);
     let _data = data;
@@ -226,11 +223,14 @@ const SinhVienComponent = () => {
     _data = [e, ..._data];
     setDataSinhVien(_data);
   }
-  const onClickNam =(value,option)=>{
-    const _currentNamHoc = dataNamVaoTruong?.find(item => item?.namHoc === value)
-    setCurrentNamVaoTruong(_currentNamHoc);
-    const _listSinhVien = dataGetSinhViensWithNam?.getSinhVienWithKhoaVienIdAndNgayVaoTruong?.data;
-    setDataSinhVien(_listSinhVien);
+  const onClickNam = (value, option) => {
+     actGetSinhVienWithNam({
+      variables: {
+        khoaVienId: currentKhoa?.khoaVienId,
+        ngayVaoTruong: value,
+      }
+    })
+   
   }
   const { Option } = Select;
 
@@ -257,7 +257,7 @@ const SinhVienComponent = () => {
           // onChange={handleChangeNamHoc}
           onSelect={onClickNam}
         >
-          {dataNamVaoTruong?.map((dataNam,index) => (
+          {dataNamVaoTruong?.map((dataNam, index) => (
             <Option onClick={onClickNam} key={dataNam?.namHoc}>{dataNam?.namHoc}</Option>
           ))}
         </Select>

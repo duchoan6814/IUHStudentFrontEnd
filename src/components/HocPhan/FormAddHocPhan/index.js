@@ -1,5 +1,5 @@
 import React, { useEffect,useState } from "react";
-import { Modal, Form, Input, DatePicker,Select } from "antd";
+import { Modal, Form, Input, DatePicker,Select, Button } from "antd";
 
 import { isEmpty } from "lodash";
 
@@ -110,14 +110,13 @@ const ModalHocPhan = ({ visible, closeModal, type, data }) => {
         >
           <Input />
         </Form.Item>
+        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+          <Button type="primary" htmlType="submit">
+            {type === 'add' ? "Thêm" : "Sửa"}
+          </Button>
+        </Form.Item>
       </Form>
     );
-  };
-  const handleOk = (hocPhan) => {
-    setHocPhan(hocPhan);
-    console.log(hocPhan);
-    closeModal(false);
-
   };
   return (
     <Modal
@@ -126,7 +125,7 @@ const ModalHocPhan = ({ visible, closeModal, type, data }) => {
       visible={visible}
       onCancel={() => closeModal(false)}
       width={1000}
-      onOk={(e)=>handleOk(e)}
+      footer={null}
     >
       {renderForm()}
     </Modal>

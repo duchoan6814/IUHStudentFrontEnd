@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { Modal, Form, Input, notification } from "antd";
-import {useMutation} from '@apollo/client';
+import { Modal, Form, Input, notification, Button } from "antd";
+import { useMutation } from '@apollo/client';
 
 import { get, isEmpty } from "lodash";
 import queries from 'core/graphql';
@@ -14,49 +14,56 @@ const ModalKhoa = ({ visible, closeModal, type, data, onCreateComplete }) => {
     wrapperCol: { span: 24 },
   };
 
-  const [actUpdateKhoa, {data: dataUpdateKhoa, loading: loadingUpdateKhoa}] = useMutation(updateKhoaMutation, {
+  const [actUpdateKhoa, { data: dataUpdateKhoa, loading: loadingUpdateKhoa }] = useMutation(updateKhoaMutation, {
     onCompleted: (dataReturn) => {
       const errors = get(dataReturn, 'updateKhoa.errors', []);
-        if(!isEmpty(errors)) {
-          return errors.map(item => 
-              notification["error"]({
-                message: item?.message,
-              })
-            )
-        }
+      if (!isEmpty(errors)) {
+        return errors.map(item =>
+          notification["error"]({
+            message: item?.message,
+          })
+        )
+      }
 
-        const _data = get(dataReturn, 'updateKhoa.data', {});
+      const _data = get(dataReturn, 'updateKhoa.data', {});
 
-        if(!isEmpty(_data)) {
-          onCreateComplete(_data)
-          return;
-        }
-
-        notification["error"]({
-          message: "Loi ket noi",
+      const status = get(dataReturn, 'updateKhoa.status', {})
+      if (!isEmpty(_data)) {
+        onCreateComplete(_data);
+        notification.open({
+          message: 'Thông báo',
+          description: status,
         })
-    }
-  }); 
+        return;
+      }
 
-  const [actCreateKhoa, {data: dataCreateKhoa, loading: loadingCreateKhoa}] = useMutation(createKhoaMutation,
+      notification["error"]({
+        message: "Loi ket noi",
+      })
+    }
+  });
+
+  const [actCreateKhoa, { data: dataCreateKhoa, loading: loadingCreateKhoa }] = useMutation(createKhoaMutation,
     {
       onCompleted: (dataReturn) => {
         const errors = get(dataReturn, 'createKhoa.errors', []);
-        if(!isEmpty(errors)) {
-          return errors.map(item => 
-              notification["error"]({
-                message: item?.message,
-              })
-            )
+        if (!isEmpty(errors)) {
+          return errors.map(item =>
+            notification["error"]({
+              message: item?.message,
+            })
+          )
         }
-
         const _data = get(dataReturn, 'createKhoa.data', {});
-
-        if(!isEmpty(_data)) {
-          onCreateComplete(_data)
+        const status = get(dataReturn, 'createKhoa.status', {})
+        if (!isEmpty(_data)) {
+          onCreateComplete(_data);
+          notification.open({
+            message: 'Thông báo',
+            description: status,
+          })
           return;
         }
-
         notification["error"]({
           message: "Loi ket noi",
         })
@@ -75,10 +82,15 @@ const ModalKhoa = ({ visible, closeModal, type, data, onCreateComplete }) => {
     })
   }, [data])
 
- 
+
   const renderForm = () => {
     return (
-      <Form {...layout} form={form} name="nest-messages">
+      <Form {...layout} 
+      form={form} 
+      name="nest-messages"
+      onFinish={type === 'add' ? handleAddKhoa : handleEditKhoa}
+
+      >
         <Form.Item
           name={"khoaVienId"}
           label="Mã khoa"
@@ -96,6 +108,11 @@ const ModalKhoa = ({ visible, closeModal, type, data, onCreateComplete }) => {
           label="Liên kết"
         >
           <Input />
+        </Form.Item>
+        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+          <Button type="primary" htmlType="submit">
+          {type === 'add' ? "Thêm" : "Sửa"}
+          </Button>
         </Form.Item>
       </Form>
     );
@@ -134,7 +151,7 @@ const ModalKhoa = ({ visible, closeModal, type, data, onCreateComplete }) => {
       visible={visible}
       onCancel={() => closeModal(false)}
       width={1000}
-      onOk={type === 'add' ? handleAddKhoa : handleEditKhoa}
+      footer={null}
       confirmLoading={loadingCreateKhoa || loadingUpdateKhoa}
     >
       {renderForm()}
