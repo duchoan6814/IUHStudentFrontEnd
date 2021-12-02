@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Table, Select, Button, AutoComplete } from 'antd';
+import { Table, Select, Button, AutoComplete, Upload, message, notification } from 'antd';
 import './index.scss';
 import ModalAddChuyenNganh from './FormAddChuyenNganh';
 import queries from 'core/graphql';
 import { getChuyenNganhsFragment } from "./fragment";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
-import { get, isEmpty } from "lodash";
+import { get, isEmpty, reject } from "lodash";
 import { getKhoafragment } from "components/Khoa/fragment";
+import { UploadOutlined } from "@ant-design/icons";
+import * as XLSX from 'xlsx';
 
+const createChuyenNganh = queries.mutation.createChuyenNganh();
 const getChuyenNganhsQuery = queries.query.getChuyenNganhs(getChuyenNganhsFragment);
 const deleteChuyenNganhMutation = queries.mutation.deleteChuyenNganh();
 const getKhoasQuery = queries.query.getKhoas(getKhoafragment);
 const getChuyenNganhWithKhoaVienIdQuery = queries.query.getChuyenNganhWithKhoaVienId(getChuyenNganhsFragment)
+
 const ChuyenNganh = () => {
   const [visibleModal1, setVisibleModal1] = useState(false);
   const [visibleModal, setVisibleModal] = useState(false);
@@ -19,6 +23,7 @@ const ChuyenNganh = () => {
   const [dataChuyenNganhs, setDataGetChuyenNganhs] = useState([]);
   const [dataKhoa, setDataKhoa] = useState([]);
   const [currentKhoa, setCurrentKhoa] = useState([]);
+  let count =0;
 
   const { data: dataGetKhoas } = useQuery(getKhoasQuery);
   const [actGetDataChuyenNganhWithKhoaVien, { data: getDataChuyenNganhWithKhoaVienId }] = useLazyQuery(getChuyenNganhWithKhoaVienIdQuery, {
@@ -29,6 +34,37 @@ const ChuyenNganh = () => {
   })
   const { data: dataGetChuyenNganhs, loading: loadingGetChuyeNganhs } = useQuery(getChuyenNganhsQuery);
   const [actDeleteChuyenNganh, { data: dataDeleteChuyenNganh, loading: loadingDelteChuyenNganh }] = useMutation(deleteChuyenNganhMutation);
+
+  const [actCreateChuyenNganh, { data: dataCreateChuyenNganh, loading: loadingCreateChuyenNganh }] = useMutation(createChuyenNganh, {
+    onCompleted: (dataReturn) => {
+      const errors = get(dataReturn, 'createChuyenNganh.errors', []);
+      if (!isEmpty(errors)) {
+        return errors.map(item =>
+          notification["error"]({
+            message: 'Thông báo',
+            description: item?.message,
+          })
+        )
+      }
+
+      const _data = get(dataReturn, 'createChuyenNganh.data', {});
+
+      const status = get(dataReturn, 'createChuyenNganh.status', {})
+      
+      if (!isEmpty(_data)) {
+        handleCrateChuyenNganhComplete(_data);
+        notification.open({
+          message: 'Thông báo',
+          description: `Thêm ${count} chuyên ngành`,
+        })
+        return;
+      }
+
+      notification["error"]({
+        message: "Loi ket noi",
+      })
+    }
+  });
 
   const columns = [
     { title: 'Mã chuyên ngành', dataIndex: 'chuyenNganhId', key: 'maChuyenNganh', width: 200, },
@@ -48,6 +84,7 @@ const ChuyenNganh = () => {
       ),
     },
   ];
+
 
 
   useEffect(() => {
@@ -124,6 +161,38 @@ const ChuyenNganh = () => {
     setChuyenNganh(chuyenNganh);
     setVisibleModal1(true);
   };
+
+  const readExcel = (file) => {
+    const promise = new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsArrayBuffer(file);
+      fileReader.onload = (e) => {
+        const bufferArray = e.target.result;
+        const wb = XLSX.read(bufferArray, { type: 'buffer' });
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
+        const data = XLSX.utils.sheet_to_json(ws);
+        resolve(data);
+      };
+      fileReader.onerror = (error) => {
+        reject(error);
+      }
+    });
+    promise.then((d) => {
+      count=1;
+      d.map((cn) => {
+        count ++;
+        console.log(count);
+        actCreateChuyenNganh({
+          variables: {
+            inputs: {
+              tenChuyenNganh: cn?.ChuyenNganh,
+            }
+          }
+        })
+      })
+    })
+  }
   return (<div className='chuyenNganh'>
     <h1>DANH SÁCH CHUYÊN NGÀNH</h1>
     <div className="combox-sv">
@@ -141,6 +210,13 @@ const ChuyenNganh = () => {
       </Select>
     </div>
     <Button className='ant-btn-primary' type="primary" onClick={() => setVisibleModal(true)}>+ Thêm chuyên ngành</Button>
+    <div>
+      <input type="file" onChange={(e) => {
+        const file = e.target.files[0];
+        readExcel(file);
+      }} />
+    </div>
+    
     <Table
       columns={columns}
       // expandable={{
