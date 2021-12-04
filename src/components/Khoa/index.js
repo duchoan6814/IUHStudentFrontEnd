@@ -58,7 +58,7 @@ const KhoaComponent = () => {
 
 
   const handleButtonDelete = async (khoa) => {
-    
+
     const _dataReutrn = await actDeleteKhoa({
       variables: {
         khoaID: khoa?.khoaVienId
@@ -129,7 +129,12 @@ const KhoaComponent = () => {
     <div className='khoa'>
       <h1>DANH SÁCH KHOA</h1>
       <Button className='ant-btn-primary' type="primary" onClick={() => setVisibleModal(true)}>+ Thêm khoa</Button>
-      <Table className='ant-table-wrapper' columns={columns} dataSource={data} />
+      <Table
+        className='ant-table-wrapper'
+        columns={columns}
+        dataSource={data}
+        scroll={{ x: 1500, y: "50vh" }}
+      />
       <ModalAddKhoa
         type="add"
         visible={visibleModal}

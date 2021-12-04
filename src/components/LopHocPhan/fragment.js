@@ -1,6 +1,11 @@
-const getLopFragment = `
-    lopId
-    tenLop
-    khoaHoc
+const getLopHocPhanFragment = `
+    lopHocPhanId
+    maLopHocPhan
+    tenVietTat
+    tenLopHocPhan
+    soNhomThucHanh
+    trangThaiLopHocPhan
+    soLuongToiDa
+    moTa
 `
-export default getLopFragment;
+export default getLopHocPhanFragment;

@@ -1,18 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Table, Select, Button } from 'antd';
 import './index.scss'
 import ModalHocPhan from "./FormAddHocPhan";
+import queries from "core/graphql";
+import { hocPhanFragment } from "./fragment";
+import { useMutation, useQuery } from "@apollo/client";
+import { get, isEmpty } from "lodash";
 
+const getHocPhanQuery = queries.query.getHocPhans(hocPhanFragment);
+const deteleHocPhanMutation = queries.mutation.deleteHocPhan();
 const HocPhan = () => {
+
     const [visibleModal, setVisibleModal] = useState(false);
     const [visibleModalSua, setVisibleModalSua] = useState(false);
     const [hocPhan, setHocPhan] = useState({});
+    const [dataHocPhan, setDataHocPhan] = useState([]);
+
+    const { data: dataGetHocPhan } = useQuery(getHocPhanQuery);
+    const [actDeleteHocPhan, { data: dataDeleteHocPhan, loading: loadingDeleteHocPhan }] = useMutation(deteleHocPhanMutation);
+
     const columns = [
         {
-            title: 'ID',
-            width: 50,
-            dataIndex: 'id',
-            key: 'id',
+            title: 'Học phần ID',
+            width: 150,
+            dataIndex: 'hocPhanId',
+            key: 'hocPhanId',
         },
         {
             title: 'Mã học phần',
@@ -21,46 +33,25 @@ const HocPhan = () => {
             width: 200,
         },
         {
-            title: 'Môn học',
-            dataIndex: 'monHoc',
-            key: 'monHoc',
-            width: 400,
-        },
-        {
             title: 'Số tín chỉ LT',
-            dataIndex: 'tinChiLT',
-            key: 'tinChiLT',
+            dataIndex: 'soTinChiLyThuyet',
+            key: 'soTinChiLyThuyet',
             width: 300,
         },
         {
             title: 'Số tín chỉ TH',
-            dataIndex: 'tinChiTH',
-            key: 'tinChiTH',
+            dataIndex: 'getSoTinChiThucHanh',
+            key: 'getSoTinChiThucHanh',
             width: 300,
         },
         {
             title: 'Học phần bắt buộc',
-            dataIndex: 'hocPhanBatBuoc',
-            key: 'hocPhanBatBuoc',
+            dataIndex: 'batBuoc',
+            key: 'batBuoc',
             width: 300,
-        },
-        {
-            title: 'Môn học tiên quyết',
-            dataIndex: 'monHocTienQuyet',
-            key: 'monHocTienQuyet',
-            width: 300,
-        },
-        {
-            title: 'Môn học song hành',
-            dataIndex: 'monHocSongHanh',
-            key: 'monHocSongHanh',
-            width: 300,
-        },
-        {
-            title: 'Môn học tương đương',
-            dataIndex: 'monHocTuongDuong',
-            key: 'monHocTuongDuong',
-            width: 300,
+            render: item => {
+                return item ? "Bắt buộc" : "Không bắt buộc"
+            }
         },
         {
             title: 'Mô tả',
@@ -75,30 +66,73 @@ const HocPhan = () => {
             width: 200,
             render: (e) => (
                 <div>
-                    <Button danger onClick={()=> handlerEditButton(e)}>Chỉnh sửa</Button>
-                    <Button>Xóa</Button>
+                    <Button danger onClick={() => handlerEditButton(e)}>Chỉnh sửa</Button>
+                    <Button onClick={() => handleButtonDelete(e)} style={{ marginLeft: 5 }}>Xóa</Button>
                 </div>
             ),
         },
     ];
 
-    const data = [];
-    for (let i = 0; i < 13; i++) {
-        data.push({
-            key: i,
-            id: `${i}`,
-            maHocPhan: `400129343${i}`,
-            monHoc: `Kiến trúc và thiết kế phần mềm`,
-            tinChiLT: 3,
-            tinChiTH: 4,
-            hocPhanBatBuoc: `i`,
-            monHocTienQuyet: ` Lập trình WWW`,
-            monHocSongHanh: `..`,
-            monHocTuongDuong: `không`,
-            moTa: `không`,
+    useEffect(() => {
+        const _lisHocPhan = dataGetHocPhan?.getHocPhans?.data;
+        setDataHocPhan(_lisHocPhan);
+    }, [dataGetHocPhan])
 
+    const handleCreateComplete = (e) => {
+        setVisibleModal(false);
+        let _data = dataHocPhan;
+        _data = [e, ..._data];
+        setDataHocPhan(_data);
+    }
+    const handleUpdateComplete = (e) => {
+        setVisibleModalSua(false);
+
+        const _index = dataHocPhan?.findIndex(item => item?.hocPhanId === e?.hocPhanId);
+
+        let _data = dataHocPhan;
+        _data = [
+            ..._data?.slice(0, _index),
+            {
+                ..._data?.[_index],
+                ...e
+            },
+            ..._data?.slice(_index + 1)
+        ];
+
+        setDataHocPhan(_data);
+    }
+    const handleButtonDelete = async (hp) => {
+
+        const _dataReutrn = await actDeleteHocPhan({
+            variables: {
+                hocPhanId: hp?.hocPhanId
+            }
         });
 
+        const dataReturn = get(_dataReutrn, "data", {});
+
+        const errors = get(dataReturn, 'deleteHocPhan.errors', []);
+        if (!isEmpty(errors)) {
+            errors?.map(item => console.log(item.message));
+            return;
+        }
+
+        const status = get(dataReturn, 'deleteHocPhan.status', "");
+        if (status === "OK") {
+            const _index = dataHocPhan?.findIndex(item => item?.hocPhanId === hp?.hocPhanId)
+
+            let _listHocPhan = dataHocPhan;
+            _listHocPhan = [
+                ..._listHocPhan.slice(0, _index),
+                ..._listHocPhan.slice(_index + 1)
+            ];
+
+            setDataHocPhan(_listHocPhan);
+
+            return;
+        }
+
+        console.log("Loi ket noi");
     }
     const { Option } = Select;
     const khoaData = ["CNTT", "Công nghệ may", "Kinh doanh quốc tế"];
@@ -110,7 +144,7 @@ const HocPhan = () => {
     return (
         <div className='hocPhan'>
             <h1>DANH SÁCH HỌC PHẦN</h1>
-            <div className="combox-sv">
+            {/* <div className="combox-sv">
                 <span>Khoa</span>
                 <Select
                     className="ant-select-selector"
@@ -121,18 +155,20 @@ const HocPhan = () => {
                         <Option key={khoaData}>{khoaData}</Option>
                     ))}
                 </Select>
-            </div>
-            <Button className='ant-btn-primary' type="primary" onClick={()=>setVisibleModal(true)} >+ Thêm học phần</Button>
-            <Table columns={columns} dataSource={data} scroll={{ x: 1300 }} />
+            </div> */}
+            <Button className='ant-btn-primary' type="primary" onClick={() => setVisibleModal(true)} >+ Thêm học phần</Button>
+            <Table columns={columns} dataSource={dataHocPhan} scroll={{ x: 1500, y: "50vh" }} />
             <ModalHocPhan
                 type="add"
                 visible={visibleModal}
                 closeModal={setVisibleModal}
+                onCreateComplete={(e) => handleCreateComplete(e)}
             />
             <ModalHocPhan
                 type="sua"
                 visible={visibleModalSua}
                 closeModal={setVisibleModalSua}
+                onCreateComplete={(e) => handleUpdateComplete(e)}
                 data={
                     hocPhan
                 }

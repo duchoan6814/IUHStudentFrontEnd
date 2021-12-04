@@ -6,7 +6,7 @@ import ModalMonHoc from './FormAddMonHoc';
 import queries from 'core/graphql';
 import { getMonHocFragment } from './fragment';
 import { useMutation, useQuery } from "@apollo/client";
-import { get,isEmpty } from "lodash";
+import { get, isEmpty } from "lodash";
 
 const getMonHocsQuery = queries.query.getMonHocs(getMonHocFragment);
 const deleteMonHocMutaion = queries.mutation.deleteMonHoc();
@@ -58,7 +58,7 @@ const MonHoc = () => {
         const _listMonHoc = dataGetMonHocs?.getMonHocs?.data;
         setDataMonHoc(_listMonHoc);
     }, [dataGetMonHocs]);
-    const handleDeleteButton  = async (e) => {
+    const handleDeleteButton = async (e) => {
         const _dataReutrn = await actDeleteMonHoc({
             variables: {
                 monHocId: e?.monHocId,
@@ -76,7 +76,7 @@ const MonHoc = () => {
             let _listMonHoc = dataMonHoc;
             _listMonHoc = [
                 ..._listMonHoc.slice(0, _index),
-                ..._listMonHoc.slice(_index +1)
+                ..._listMonHoc.slice(_index + 1)
             ];
             console.log('_listMonHoc', _listMonHoc);
             setDataMonHoc(_listMonHoc);
@@ -114,7 +114,7 @@ const MonHoc = () => {
     return (<div className='monHoc'>
         <h1>DANH SÁCH MÔN HỌC</h1>
         <Button className='ant-btn-primary' type="primary" onClick={() => { setVisibleModal(true) }}>+ Thêm môn học</Button>
-        <Table className='ant-table-wrapper' columns={columns} dataSource={dataMonHoc} />
+        <Table className='ant-table-wrapper' columns={columns} dataSource={dataMonHoc} scroll={{ x: 1500, y: "50vh" }} />
         <ModalMonHoc
             type="add"
             visible={visible}

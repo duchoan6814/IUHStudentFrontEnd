@@ -388,7 +388,7 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
       footer={null}
       onCancel={() => closeModal(false)}
       width={1000}
-      onCreateComplete={loadingSinhVien || lodingUpdateSinhVien}
+      confirmLoading={loadingSinhVien || lodingUpdateSinhVien}
     >
       {renderForm()}
     </Modal>

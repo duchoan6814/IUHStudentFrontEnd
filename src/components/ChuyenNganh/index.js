@@ -23,7 +23,7 @@ const ChuyenNganh = () => {
   const [dataChuyenNganhs, setDataGetChuyenNganhs] = useState([]);
   const [dataKhoa, setDataKhoa] = useState([]);
   const [currentKhoa, setCurrentKhoa] = useState([]);
-  let count =0;
+  let count = 0;
 
   const { data: dataGetKhoas } = useQuery(getKhoasQuery);
   const [actGetDataChuyenNganhWithKhoaVien, { data: getDataChuyenNganhWithKhoaVienId }] = useLazyQuery(getChuyenNganhWithKhoaVienIdQuery, {
@@ -50,7 +50,7 @@ const ChuyenNganh = () => {
       const _data = get(dataReturn, 'createChuyenNganh.data', {});
 
       const status = get(dataReturn, 'createChuyenNganh.status', {})
-      
+
       if (!isEmpty(_data)) {
         handleCrateChuyenNganhComplete(_data);
         notification.open({
@@ -179,9 +179,9 @@ const ChuyenNganh = () => {
       }
     });
     promise.then((d) => {
-      count=1;
+      count = 1;
       d.map((cn) => {
-        count ++;
+        count++;
         console.log(count);
         actCreateChuyenNganh({
           variables: {
@@ -216,9 +216,10 @@ const ChuyenNganh = () => {
         readExcel(file);
       }} />
     </div>
-    
+
     <Table
       columns={columns}
+      scroll={{ x: 1500, y: "50vh" }}
       // expandable={{
       //   expandedRowRender: record => <div>
       //     <div style={{ marginRight: 100, display: "flex", flexDirection: "row", alignItems: "center" }}>

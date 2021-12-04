@@ -46,6 +46,7 @@ const HocKy = () => {
             title: 'Thao tác',
             key: 'thaoTac',
             width: 300,
+            fixed: "right",
             render: (e) => (<div>
                 <Button danger onClick={() => handlerEditButton(e)}>Chỉnh sửa</Button>
                 <Button onClick={() => handlerDeteleButton(e)}>Xóa</Button>
@@ -117,7 +118,7 @@ const HocKy = () => {
     return (<div className='hocKy'>
         <h1>DANH SÁCH HỌC KỲ</h1>
         <Button className='ant-btn-primary' type="primary" onClick={() => setVisibleModal(true)}>+ Thêm học kỳ</Button>
-        <Table className='ant-table-wrapper' columns={columns} dataSource={dataHocKy} />
+        <Table className='ant-table-wrapper' columns={columns} dataSource={dataHocKy} scroll={{ x: 1500, y: "50vh" }} />
         <ModalHocKy
             type="add"
             visible={visibleModal}
