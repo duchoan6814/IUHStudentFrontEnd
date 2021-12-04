@@ -25,6 +25,7 @@ import getNamHocWithKhoaVienId from "./getNamHocWithKhoaVienId";
 import getSinhVienWithKhoaVienIdAndNgayVaoTruong from "./getSinhVienWithKhoaVienIdAndNgayVaoTruong";
 import getSinhVienWithKhoaVienId from "./getSinhVienWithKhoaVienId";
 import getChuyenNganhWithKhoaVienId from "./getChuyenNganhWithKhoaVienId";
+import deleteSinhVien from "./deleteSinhVien";
 const query = {
   ...Login.query,
   ...GetProfile.query,
@@ -56,6 +57,7 @@ const mutation = {
   ...createHocKy.mutation,
   ...updateHocKy.mutation,
   ...deleteHocKy.mutation,
+  ...deleteSinhVien.mutation,
 };
 
 export default {

@@ -88,6 +88,7 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
       }
     });
   const [form] = Form.useForm();
+  console.log(data);
   useEffect(() => {
     if (isEmpty(data)) {
       return;
@@ -107,6 +108,11 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
       hoKhauThuongTru: data.hoKhauThuongTru,
       danToc: data.danToc,
       email: data.email,
+      ngaySinh: type === 'add' ? null : moment(data.ngaySinh),
+      ngayVaoDang: type === 'add' ? null : moment(data.ngayVaoDang),
+      ngayVaoDoan: type === 'add' ? null : moment(data.ngayVaoDoan),
+      ngayVaoTruong: type === 'add' ? null : moment(data.ngayVaoTruong),
+
     })
     setngaySinh(data.ngaySinh);
     setngayVaoDang(data.ngayVaoDang);
@@ -211,10 +217,9 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
         >
           <Input />
         </Form.Item>
-        <Form.Item name="ngaySinh" label="Ngày sinh">
+        <Form.Item name="ngaySinh" label="Ngày sinh" >
           <DatePicker
             onChange={(date, dateString) => handleChangeNgay('ngaySinh', date, dateString)}
-            value={type === 'add' ? null : moment(ngaySinh, 'DD-MM-YYYY')}
             placeholder='Ngày sinh' />
         </Form.Item>
 
@@ -248,19 +253,16 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
         <Form.Item name="ngayVaoTruong" label="Ngày vào trường">
           <DatePicker
             onChange={(date, dateString) => handleChangeNgay('ngayVaoTruong', date, dateString)}
-            value={type === 'add' ? null : ngayVaoTruong}
             placeholder='Ngày vào trường' />
         </Form.Item>
         <Form.Item name="ngayVaoDoan" label="Ngày vào đoàn" >
           <DatePicker
             onChange={(date, dateString) => handleChangeNgay('ngayVaoDoan', date, dateString)}
-            value={type === 'add' ? null : moment(ngayVaoDoan, 'DD-MM-YYYY')}
             placeholder='Ngày vào đoàn' />
         </Form.Item>
         <Form.Item name="ngayVaoDang" label="Ngày vào Đảng" >
           <DatePicker
             onChange={(date, dateString) => handleChangeNgay('ngayVaoDang', date, dateString)}
-            value={type === 'add' ? null : moment(ngayVaoDang, 'DD-MM-YYYY')}
             placeholder='Ngày vào Đảng' />
         </Form.Item>
 
