@@ -152,7 +152,7 @@ const LopHocPhan = () => {
     return (
         <div className='hocLopPhan'>
             <h1>DANH SÁCH LỚP HỌC PHẦN</h1>
-            <div className="combox-sv">
+            {/* <div className="combox-sv">
                 <span>Khoa</span>
                 <Select
                     className="ant-select-selector"
@@ -163,7 +163,7 @@ const LopHocPhan = () => {
                         <Option key={khoaData}>{khoaData}</Option>
                     ))}
                 </Select>
-            </div>
+            </div> */}
             <Button className='ant-btn-primary' type="primary" onClick={() => setVisibleModal(true)}>+ Thêm lớp học phần</Button>
             <Table columns={columns} dataSource={dataLop} scroll={{ x: 1500, y: "50vh" }} />
             <ModalAddLopHocPhan

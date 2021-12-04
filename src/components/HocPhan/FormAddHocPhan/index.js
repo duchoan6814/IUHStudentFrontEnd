@@ -1,62 +1,134 @@
-import React, { useEffect,useState } from "react";
-import { Modal, Form, Input, DatePicker,Select, Button } from "antd";
-
-import { isEmpty } from "lodash";
-
-
-const ModalHocPhan = ({ visible, closeModal, type, data }) => {
-  const [hocPhan, setHocPhan] = useState({});
+import React, { useEffect, useState } from "react";
+import { Modal, Form, Input, Select, Button, notification } from "antd";
+import { get, isEmpty } from "lodash";
+import queries from 'core/graphql';
+import { useMutation } from "@apollo/client";
+const createHocPhan = queries.mutation.createHocPhan();
+const updateHocPhanMutation = queries.mutation.updateHocPhan();
+const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => {
   const layout = {
     labelCol: { span: 4 },
     wrapperCol: { span: 24 },
   };
+  const [hocPhan, setHocPhan] = useState({});
+  const [batBuoc, setbatBuoc] = useState();
+  const [actCreateKhoaHocPhan, { data: dataCreateHocPhan, loading: loadingCreateHocPhan }] = useMutation(createHocPhan,
+    {
+      onCompleted: (dataReturn) => {
+        const errors = get(dataReturn, 'createHocPhan.errors', []);
+        if (!isEmpty(errors)) {
+          return errors.map(item =>
+            notification["error"]({
+              message: item?.message,
+            })
+          )
+        }
+        const _data = get(dataReturn, 'createHocPhan.data', {});
+        const status = get(dataReturn, 'createHocPhan.status', {})
+        if (!isEmpty(_data)) {
+          onCreateComplete(_data);
+          notification.open({
+            message: 'Thông báo',
+            description: status,
+          })
+          return;
+        }
+        notification["error"]({
+          message: "Loi ket noi",
+        })
+      }
+    });
+  const [actUpdateHocPhan, { data: dataUpdateHocPhan, loading: loadingUpdateHocPhan }] = useMutation(updateHocPhanMutation, {
+    onCompleted: (dataReturn) => {
+      const errors = get(dataReturn, 'updateHocPhan.errors', []);
+      if (!isEmpty(errors)) {
+        return errors.map(item =>
+          notification["error"]({
+            message: item?.message,
+          })
+        )
+      }
+
+      const _data = get(dataReturn, 'updateHocPhan.data', {});
+
+      const status = get(dataReturn, 'updateHocPhan.status', {})
+      if (!isEmpty(_data)) {
+        onCreateComplete(_data);
+        notification.open({
+          message: 'Thông báo',
+          description: status,
+        })
+        return;
+      }
+
+      notification["error"]({
+        message: "Loi ket noi",
+      })
+    }
+  });
+  const handleAdd = () => {
+    const _dataForm = form.getFieldsValue(true);
+    actCreateKhoaHocPhan({
+      variables: {
+        inputs: {
+          maHocPhan: _dataForm?.maHocPhan,
+          soTinChiLyThuyet: _dataForm?.soTinChiLyThuyet,
+          getSoTinChiThucHanh: _dataForm?.getSoTinChiThucHanh,
+          batBuoc: batBuoc,
+          moTa: _dataForm?.moTa,
+        }
+      }
+    })
+  }
+  const handleEdit = () => {
+    const _dataForm = form.getFieldsValue(true);
+
+    actUpdateHocPhan({
+      variables: {
+        inputs: {
+          maHocPhan: _dataForm?.maHocPhan,
+          soTinChiLyThuyet: _dataForm?.soTinChiLyThuyet,
+          getSoTinChiThucHanh: _dataForm?.getSoTinChiThucHanh,
+          batBuoc: batBuoc,
+          moTa: _dataForm?.moTa,
+        },
+        hocPhanId: _dataForm?.hocPhanId
+      }
+    })
+  }
+
   const [form] = Form.useForm();
   useEffect(() => {
     if (isEmpty(data)) {
       return;
     }
     form.setFieldsValue({
-      id: data.id,
+      hocPhanId: data.hocPhanId,
       maHocPhan: data.maHocPhan,
-      monHoc: data.monHoc,
-      tinChiLT: data.tinChiLT,
-      tinChiTH: data.tinChiTH,
-      hocPhanBatBuoc: data.hocPhanBatBuoc,
-      monHocTienQuyet: data.monHocTienQuyet,
-      monHocSongHanh: data.monHocSongHanh,
-      monHocTuongDuong: data.monHocTuongDuong,
+      soTinChiLyThuyet: data.soTinChiLyThuyet,
+      getSoTinChiThucHanh: data.getSoTinChiThucHanh,
+      // batBuoc: data.batBuoc,
       moTa: data.moTa,
     })
+    setbatBuoc(data.batBuoc);
   }, [data])
-  function onChange(date, dateString) {
-    console.log(date, dateString);
+  const hocPhanBatBuoc1 = [
+    { value: 'true', label: 'Bắt buộc' },
+    { value: 'false', label: 'Không bắt buộc' },
+  ];
+
+  function handleChange(type, value) {
+
+    if (type === 'batBuoc') {
+      setbatBuoc(value);
+    }
   }
-  const monHoc = [
-    { value: 'toanCC', label: 'Toán cao cấp' },
-    { value: 'cauTrucRoiRac', label: 'Cấu trúc rời rạc' },
-
-  ]
-  const monHocTienQuyet = [
-    { value: 'toanCC', label: 'Toán cao cấp' },
-    { value: 'cauTrucRoiRac', label: 'Cấu trúc rời rạc' },
-
-  ]
-  const monHocSongHanh = [
-    { value: 'toanCC', label: 'Toán cao cấp' },
-    { value: 'cauTrucRoiRac', label: 'Cấu trúc rời rạc' },
-
-  ]
-  const monHocTuongDuong = [
-    { value: 'toanCC', label: 'Toán cao cấp' },
-    { value: 'cauTrucRoiRac', label: 'Cấu trúc rời rạc' },
-
-  ]
   const renderForm = () => {
     return (
-      <Form {...layout} form={form} name="nest-messages">
+      <Form {...layout} form={form} name="nest-messages" onFinish={type === 'add' ? handleAdd : handleEdit}>
         <Form.Item
-          name={"id"}
-          label="ID"
+          name={"hocPhanId"}
+          label="học phần ID"
         >
           <Input disabled />
         </Form.Item>
@@ -67,42 +139,27 @@ const ModalHocPhan = ({ visible, closeModal, type, data }) => {
           <Input />
         </Form.Item>
         <Form.Item
-          label="Môn học"
-        >
-           <Select options={monHoc} style={{ width: 290 }} placeholder='Môn học' />
-        </Form.Item>
-        <Form.Item
-          name={"tinChiLT"}
+          name={"soTinChiLyThuyet"}
           label="Số tín chỉ LT"
         >
           <Input />
         </Form.Item>
         <Form.Item
-          name={"tinChiTH"}
+          name={"getSoTinChiThucHanh"}
           label="Số tín chỉ TH"
         >
           <Input />
         </Form.Item>
         <Form.Item
-          name={"hocPhanBatBuoc"}
+          name={"batBuoc"}
           label="Học phần bắt buộc"
         >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Môn học tiên quyết"
-        >
-           <Select options={monHocTienQuyet} style={{ width: 290 }} placeholder='Môn học tiên quyết' />
-        </Form.Item>
-        <Form.Item
-          label="Môn học song hành"
-        >
-           <Select options={monHocSongHanh} style={{ width: 290 }} placeholder='Môn học song hành' />
-        </Form.Item>
-        <Form.Item
-          label="Môn học tương đương"
-        >
-           <Select options={monHocTuongDuong} style={{ width: 290 }} placeholder='Môn học tương đương' />
+          <Select
+            options={hocPhanBatBuoc1}
+            style={{ width: 290 }}
+            value={type === "add" ? "" : (batBuoc ? "Bắt buộc" : "Không bắt buộc")}
+            // placeholder='Trạng thái'
+            onChange={(value) => handleChange('batBuoc', value)} />
         </Form.Item>
         <Form.Item
           name={"moTa"}
@@ -126,6 +183,7 @@ const ModalHocPhan = ({ visible, closeModal, type, data }) => {
       onCancel={() => closeModal(false)}
       width={1000}
       footer={null}
+      confirmLoading={loadingCreateHocPhan || loadingUpdateHocPhan}
     >
       {renderForm()}
     </Modal>
