@@ -75,7 +75,7 @@ const HocPhan = () => {
             width: 200,
             render: (e) => (
                 <div>
-                    <Button danger onClick={()=> handlerEditButton(e)}>Chỉnh sửa</Button>
+                    <Button danger onClick={() => handlerEditButton(e)}>Chỉnh sửa</Button>
                     <Button>Xóa</Button>
                 </div>
             ),
@@ -122,8 +122,8 @@ const HocPhan = () => {
                     ))}
                 </Select>
             </div>
-            <Button className='ant-btn-primary' type="primary" onClick={()=>setVisibleModal(true)} >+ Thêm học phần</Button>
-            <Table columns={columns} dataSource={data} scroll={{ x: 1300 }} />
+            <Button className='ant-btn-primary' type="primary" onClick={() => setVisibleModal(true)} >+ Thêm học phần</Button>
+            <Table columns={columns} dataSource={data} scroll={{ x: 1500, y: "50vh" }} />
             <ModalHocPhan
                 type="add"
                 visible={visibleModal}

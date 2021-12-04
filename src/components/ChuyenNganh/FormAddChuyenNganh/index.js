@@ -121,7 +121,7 @@ const ModalChuyenNganh = ({ visible, closeModal, type, data, onCreateComplete })
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button type="primary" htmlType="submit">
-          {type === 'add' ? "Thêm" : "Sửa"}
+            {type === 'add' ? "Thêm" : "Sửa"}
           </Button>
         </Form.Item>
         {/* <Form.Item
@@ -141,7 +141,7 @@ const ModalChuyenNganh = ({ visible, closeModal, type, data, onCreateComplete })
       onCancel={() => closeModal(false)}
       width={1000}
       footer={null}
-      onCreateComplete={loadingCreateChuyenNganh || loadingUpdateChuyenNganh}
+      confirmLoading={loadingCreateChuyenNganh || loadingUpdateChuyenNganh}
     >
       {renderForm()}
     </Modal>

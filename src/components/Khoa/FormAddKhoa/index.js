@@ -85,10 +85,10 @@ const ModalKhoa = ({ visible, closeModal, type, data, onCreateComplete }) => {
 
   const renderForm = () => {
     return (
-      <Form {...layout} 
-      form={form} 
-      name="nest-messages"
-      onFinish={type === 'add' ? handleAddKhoa : handleEditKhoa}
+      <Form {...layout}
+        form={form}
+        name="nest-messages"
+        onFinish={type === 'add' ? handleAddKhoa : handleEditKhoa}
 
       >
         <Form.Item
@@ -101,17 +101,17 @@ const ModalKhoa = ({ visible, closeModal, type, data, onCreateComplete }) => {
           name={"tenKhoaVien"}
           label="Tên khoa viện"
         >
-          <Input />
+          <Input defaultValue={null} />
         </Form.Item>
         <Form.Item
           name={"lienKet"}
           label="Liên kết"
         >
-          <Input />
+          <Input value={null} />
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button type="primary" htmlType="submit">
-          {type === 'add' ? "Thêm" : "Sửa"}
+            {type === 'add' ? "Thêm" : "Sửa"}
           </Button>
         </Form.Item>
       </Form>

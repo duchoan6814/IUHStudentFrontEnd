@@ -162,7 +162,7 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
       onCancel={() => closeModal(false)}
       width={1000}
       footer={null}
-      onCreateComplete={loadingCreateHocKy || loadingUpdateHocKy}
+      confirmLoading={loadingCreateHocKy || loadingUpdateHocKy}
     >
       {renderForm()}
     </Modal>

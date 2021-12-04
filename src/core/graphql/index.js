@@ -8,7 +8,7 @@ import updateKhoa from "./updateKhoa";
 import createSinhVien from "./createSinhVien";
 import updateSinhVien from "./updateSinhVien";
 import getLops from "./getLops";
-import createLop from "./createLop";
+import createLop from "./createLopHocPhan";
 import getMonHocs from "./getMonHocs";
 import createMonHoc from "./createMonHoc";
 import getHocKys from "./getHocKys";
@@ -26,6 +26,10 @@ import getSinhVienWithKhoaVienIdAndNgayVaoTruong from "./getSinhVienWithKhoaVien
 import getSinhVienWithKhoaVienId from "./getSinhVienWithKhoaVienId";
 import getChuyenNganhWithKhoaVienId from "./getChuyenNganhWithKhoaVienId";
 import deleteSinhVien from "./deleteSinhVien";
+import getLopHocPhans from "./getLopHocPhans";
+import deleteLopHocPhan from "./deleteLopHocPhan";
+import createLopHocPhan from "./createLopHocPhan";
+import updateLopHocPhan from "./updateLopHocPhan";
 const query = {
   ...Login.query,
   ...GetProfile.query,
@@ -39,6 +43,7 @@ const query = {
   ...getSinhVienWithKhoaVienIdAndNgayVaoTruong.query,
   ...getSinhVienWithKhoaVienId.query,
   ...getChuyenNganhWithKhoaVienId.query,
+  ...getLopHocPhans.query,
 };
 
 const mutation = {
@@ -47,7 +52,7 @@ const mutation = {
   ...updateKhoa.mutation,
   ...createSinhVien.mutation,
   ...updateSinhVien.mutation,
-  ...createLop.mutation,
+  ...createLopHocPhan.mutation,
   ...createMonHoc.mutation,
   ...updateMonHoc.mutation,
   ...createChuyenNganh.mutation,
@@ -58,6 +63,9 @@ const mutation = {
   ...updateHocKy.mutation,
   ...deleteHocKy.mutation,
   ...deleteSinhVien.mutation,
+  ...deleteLopHocPhan.mutation,
+  ...updateLopHocPhan.mutation,
+
 };
 
 export default {
