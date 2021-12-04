@@ -13,8 +13,8 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
     wrapperCol: { span: 24 },
   };
   const [form] = Form.useForm();
-  const [nambatDau, setnambatDau] = useState();
-  const [namketThuc, setnamketThuc] = useState();
+  const [namBatDau, setnambatDau] = useState();
+  const [namKetThuc, setnamketThuc] = useState();
   const [actCreateHocKy, { data: dataCreateHocKy, loading: loadingCreateHocKy }] = useMutation(createHocKyMutation, {
     onCompleted: (dataReturn) => {
       const errors = get(dataReturn, 'createHocKy.errors', []);
@@ -78,9 +78,10 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
     form.setFieldsValue({
       hocKyId: data?.hocKyId,
       moTa: data?.moTa,
+      namBatDau: type === 'add' ? null : moment(data?.namBatDau),
+      namKetThuc: type === 'add' ? null : moment(data?.namKetThuc)
     });
-    setnambatDau(data.namBatDau);
-    setnamketThuc(data.namKetThuc);
+
   }, [data])
   const onChangeStart = (date, dateString) => {
     setnambatDau(dateString);
@@ -92,9 +93,9 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
   const renderForm = () => {
     return (
       <Form {...layout}
-      form={form}
-      onFinish={type === 'add' ? handleAddHocKy : handleUpdateHocKy}
-      name="nest-messages"
+        form={form}
+        onFinish={type === 'add' ? handleAddHocKy : handleUpdateHocKy}
+        name="nest-messages"
       >
         <Form.Item
           name={"hocKyId"}
@@ -106,13 +107,13 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
           name={"namBatDau"}
           label="Năm học bắt đầu"
         >
-          <DatePicker onChange={onChangeStart} value={type === 'add' ? null : moment(nambatDau)} picker="year" placeholder='Năm học bắt đầu' />
+          <DatePicker onChange={onChangeStart} picker="year" placeholder='Năm học bắt đầu' />
         </Form.Item>
         <Form.Item
           name={"namKetThuc"}
           label="Năm học kết thúc"
         >
-          <DatePicker onChange={onChangeEnd} value={type === 'add' ? null : moment(namketThuc)} picker="year" placeholder='Năm học kết thúc' />
+          <DatePicker onChange={onChangeEnd} picker="year" placeholder='Năm học kết thúc' />
         </Form.Item>
         <Form.Item
           name={"moTa"}
@@ -122,7 +123,7 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button type="primary" htmlType="submit">
-          {type === 'add' ? "Thêm" : "Sửa"}
+            {type === 'add' ? "Thêm" : "Sửa"}
           </Button>
         </Form.Item>
       </Form>
@@ -133,8 +134,8 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
     actCreateHocKy({
       variables: {
         inputs: {
-          namBatDau: nambatDau,
-          namKetThuc: namketThuc,
+          namBatDau: namBatDau,
+          namKetThuc: namKetThuc,
           moTa: _dataForm?.moTa,
         }
       }
@@ -145,9 +146,9 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
     actUpdatehocKy({
       variables: {
         inputs: {
-          namBatDau: nambatDau,
-          namKetThuc: namketThuc,
-          // moTa: _dataForm?.moTa,
+          namBatDau: namBatDau,
+          namKetThuc: namKetThuc,
+          moTa: _dataForm?.moTa,
         },
         maHocKy: _dataForm?.hocKyId,
       }

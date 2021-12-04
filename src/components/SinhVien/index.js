@@ -3,7 +3,7 @@ import { Table, Button, Select, notification } from "antd";
 import * as XLSX from 'xlsx';
 import ModalAddSinhVien from "./FormAddStudent";
 import "./SinhVien.scss";
-import { useLazyQuery, useQuery,useMutation } from "@apollo/client";
+import { useLazyQuery, useQuery, useMutation } from "@apollo/client";
 import { get, isEmpty, reject } from "lodash";
 import { getSinhVienFragment } from "./fragment";
 import queries from "core/graphql";
@@ -14,19 +14,20 @@ const getSinhVienWithKhoaVienIdQuery = queries.query.getSinhVienWithKhoaVienId(g
 const getKhoaQuery = queries.query.getKhoas(getKhoafragment);
 const getNamHocWithKhoaVienIdQuery = queries.query.getNamHocWithKhoaVienId(getNamHocWithKhoaVienIdFragment);
 const getSinhVienWithKhoaVienIdAndNgayVaoTruongQuery = queries.query.getSinhVienWithKhoaVienIdAndNgayVaoTruong(getSinhVienFragment);
-
+const deteleSinhVienMutation = queries.mutation.deleteSinhVien();
 const SinhVienComponent = () => {
 
 
   const [visibleModal1, setVisibleModal1] = useState(false);
   const [visibleModal, setVisibleModal] = useState(false);
+
   const [sinhVien, setSinhVien] = useState({});
   const [data, setDataSinhVien] = useState([]);
   const [dataKhoa, setDataKhoa] = useState([]);
   const [currentKhoa, setCurrentKhoa] = useState([]);
   const [currentNamVaoTruong, setCurrentNamVaoTruong] = useState([]);
   const [dataNamVaoTruong, setDataNamVaoTruong] = useState([]);
-  
+
   const createSinhVienMutation = queries.mutation.createSinhVien();
   const { data: dataGetSinhViens, loading: loadingGetSinhViens } = useQuery(getSinhVienWithKhoaVienIdQuery, {
     variables: {
@@ -65,6 +66,11 @@ const SinhVienComponent = () => {
         const status = get(dataReturn, 'createSinhVien.status', {})
         if (!isEmpty(_data)) {
           handleCreateSinhVien(_data);
+
+          notification.open({
+            message: 'Thông báo',
+            description: `Thêm 1 sinh viên`,
+          })
           return;
         }
 
@@ -73,6 +79,7 @@ const SinhVienComponent = () => {
         })
       }
     });
+  const [actDeteleSinhVien, { data: dataDeleteSinhVien, loading: loadingDeleteSinhVien }] = useMutation(deteleSinhVienMutation);
   const columns = [
     {
       title: "ID",
@@ -97,7 +104,7 @@ const SinhVienComponent = () => {
     },
     {
       title: "Tên",
-      width: 80,
+      width: 100,
       dataIndex: "ten",
       key: "ten",
       fixed: "left",
@@ -143,6 +150,9 @@ const SinhVienComponent = () => {
       width: 250,
       dataIndex: "gioiTinh",
       key: "gioiTinh",
+      render: item => {
+        return item ? "Nữ" : "Nam"
+      }
     },
     {
       title: "Số điện thoại",
@@ -203,8 +213,10 @@ const SinhVienComponent = () => {
           <Button danger onClick={() => handlerEditButton(e)}>
             Chỉnh sửa
           </Button>
-          <Button style={{ marginLeft: 10 }}>Xóa</Button>
-        </div>
+          <Button
+            onClick={() => handlerDeteleButton(e)}
+            style={{ marginLeft: 10 }}>Xóa</Button>
+        </div >
       ),
     },
   ];
@@ -238,22 +250,56 @@ const SinhVienComponent = () => {
   }
 
   const handleCreateSinhVien = (e) => {
-    setVisibleModal(false);
     let _data = data;
     _data = [e, ..._data];
     setDataSinhVien(_data);
-    let count =_data.length-data.length;
-    console.log("Count", count);
-    notification.open({
-      message: 'Thông báo',
-      description: `Thêm ${count} sinh viên`,
-    })
   }
   const handleUpdateSinhVien = (e) => {
+    const _index = data?.findIndex(item => item?.sinhVienId === e?.sinhVienId);
     setVisibleModal1(false);
     let _data = data;
-    _data = [e, ..._data];
+    _data = [
+      ...data?.slice(0, _index),
+      {
+        ..._data?.[_index],
+        ...e
+      },
+      ...data?.slice(_index + 1)
+    ];
     setDataSinhVien(_data);
+  }
+  const handlerDeteleButton = async (e) => {
+    const _dataReutrn = await actDeteleSinhVien({
+      variables: {
+        sinhVienId: e?.sinhVienId,
+      }
+    })
+    const dataReturn = get(_dataReutrn, "data", {});
+    const message = get(_dataReutrn, "deleteSinhVien.message", {});
+    const errors = get(_dataReutrn, "deleteSinhVien.errors", []);
+    if (!isEmpty(errors)) {
+      return errors.map(item =>
+        notification["error"]({
+          message: item?.message,
+        })
+      )
+    }
+    const status = get(dataReturn, 'deleteSinhVien.status', "");
+    if (status === "OK") {
+      const _index = data?.findIndex(item => item?.sinhVienId === e?.sinhVienId)
+
+      let _listSinhVien = data;
+      _listSinhVien = [
+        ..._listSinhVien.slice(0, _index),
+        ..._listSinhVien.slice(_index + 1)
+      ];
+      setDataSinhVien(_listSinhVien);
+      notification.open({
+        message: 'Thông báo',
+        description: "Xóa sinh viên thành công",
+      })
+      return;
+    }
   }
   const onClickNam = (value, option) => {
     actGetSinhVienWithNam({
@@ -265,6 +311,7 @@ const SinhVienComponent = () => {
 
   }
   const { Option } = Select;
+  //  thêm bằng file
   const readExcel = (file) => {
     const promise = new Promise((resolve, reject) => {
       const fileReader = new FileReader();
@@ -283,7 +330,6 @@ const SinhVienComponent = () => {
     });
     promise.then((d) => {
       d.map((_dataForm) => {
-       
         actCreateSinhVien({
           variables: {
             inputs: {
@@ -295,9 +341,9 @@ const SinhVienComponent = () => {
                 hoTenDem: _dataForm?.hoTenDem,
                 ten: _dataForm?.ten,
                 ngaySinh: _dataForm?.ngaySinh,
-                bacDaoTao: _dataForm?.bacDaoTao1,
-                trangThai: _dataForm?.trangThai1,
-                loaiHinhDaoTao: _dataForm?.loaiHinhDaoTao1,
+                bacDaoTao: _dataForm?.bacDaoTao,
+                trangThai: _dataForm?.trangThai,
+                loaiHinhDaoTao: _dataForm?.loaiHinhDaoTao,
                 ngayVaoTruong: _dataForm?.ngayVaoTruong,
                 ngayVaoDoan: _dataForm?.ngayVaoDoan,
                 soDienThoai: _dataForm?.soDienThoai,
@@ -307,7 +353,7 @@ const SinhVienComponent = () => {
                 danToc: _dataForm?.danToc,
                 ngayVaoDang: _dataForm?.ngayVaoDang,
                 email: _dataForm?.email,
-                tonGiao: _dataForm?.tonGiao1
+                tonGiao: _dataForm?.tonGiao
               }
             }
           }
