@@ -1,6 +1,7 @@
 on:
   pull_request:
-    - master
+    branchs:
+      - master
 
 jobs:
   build:
