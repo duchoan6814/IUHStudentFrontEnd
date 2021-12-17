@@ -51,4 +51,4 @@ jobs:
           aws ssm send-command \
               --document-name "AWS-RunShellScript" \
               --targets '[{"Key":"InstanceIds","Values":["${{ secrets.INSTANCE_ID }}"]}]' \
-              --parameters '{"commands":["#!/bin/bash","yum -y update", "cd /home/ec2-user", "bash run-command-fe.sh"]}'
+              --parameters '{"commands":["#!/bin/bash","yum -y update", "cd /home/ec2-user", "bash run-command.sh"]}'
