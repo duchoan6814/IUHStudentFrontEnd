@@ -2,6 +2,8 @@ import logo from "./logo.svg";
 import { useQuery, gql } from "@apollo/client";
 import "./App.css";
 
+// hello world
+
 function App() {
   const { data: dataLogin, loading: loadingLogin } = useQuery(
     gql`
