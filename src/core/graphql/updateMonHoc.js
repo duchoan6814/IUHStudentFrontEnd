@@ -2,8 +2,8 @@
 import { gql } from "@apollo/client";
 
 export default {
-    mutation: {
-        updateMonHoc: (fragment) => gql`
+  mutation: {
+    updateMonHoc: (fragment) => gql`
         mutation UPDATE_KHOA($inputs: MonHocInput!, $maMonHoc: ID!){
             updateMonHoc(
                 inputs: $inputs
@@ -16,12 +16,10 @@ export default {
                 error_fields
               }
               data {
-                monHocId
-                tenMonHoc
-                moTa
+                ${fragment}
               }
             }
           }
         `
-    }
+  }
 }

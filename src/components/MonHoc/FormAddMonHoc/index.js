@@ -3,9 +3,11 @@ import { Modal, Form, Input, Select, notification, Button } from "antd";
 import { get, isEmpty } from "lodash";
 import queries from 'core/graphql';
 import { useMutation } from "@apollo/client";
+import { getMonHocFragment } from "../fragment";
 
-const createMonHocMutation = queries.mutation.createMonHoc();
-const updateMonHocMutation = queries.mutation.updateMonHoc();
+const createMonHocMutation = queries.mutation.createMonHoc(getMonHocFragment);
+const updateMonHocMutation = queries.mutation.updateMonHoc(getMonHocFragment);
+
 
 const ModalMonHoc = ({ visible, closeModal, type, data, onCreateComplete }) => {
   const layout = {
@@ -81,6 +83,8 @@ const ModalMonHoc = ({ visible, closeModal, type, data, onCreateComplete }) => {
     form.setFieldsValue({
       monHocId: data.monHocId,
       tenMonHoc: data.tenMonHoc,
+      soTinChiLyThuyet: data.soTinChiLyThuyet,
+      soTinChiThucHanh: data.soTinChiThucHanh,
       moTa: data.moTa,
     })
   }, [data])
@@ -91,6 +95,8 @@ const ModalMonHoc = ({ visible, closeModal, type, data, onCreateComplete }) => {
       variables: {
         inputs: {
           tenMonHoc: _dataForm?.tenMonHoc,
+          soTinChiLyThuyet: _dataForm?.soTinChiLyThuyet,
+          soTinChiThucHanh: _dataForm?.soTinChiThucHanh,
           moTa: _dataForm?.moTa
         }
       }
@@ -103,6 +109,8 @@ const ModalMonHoc = ({ visible, closeModal, type, data, onCreateComplete }) => {
       variables: {
         inputs: {
           tenMonHoc: _dataForm?.tenMonHoc,
+          soTinChiLyThuyet: _dataForm?.soTinChiLyThuyet,
+          soTinChiThucHanh: _dataForm?.soTinChiThucHanh,
           moTa: _dataForm?.moTa
         },
         maMonHoc: _dataForm?.monHocId
@@ -121,6 +129,18 @@ const ModalMonHoc = ({ visible, closeModal, type, data, onCreateComplete }) => {
         <Form.Item
           name={"tenMonHoc"}
           label="Tên môn học"
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name={"soTinChiLyThuyet"}
+          label="Số tín chỉ lý thuyết"
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name={"soTinChiThucHanh"}
+          label="Số tín chỉ thực hành"
         >
           <Input />
         </Form.Item>
