@@ -3,11 +3,11 @@ import { gql } from "@apollo/client";
 
 export default {
     mutation: {
-        updateHocPhan: (fragment) => gql`
-        mutation UPDATE_KHOA($inputs: HocPhanInput!, $hocPhanId: ID!){
-            updateHocPhan(
+        updateNamHoc: (fragment) => gql`
+        mutation UPDATE_NAMHOC($inputs: NamHocInput!, $namHocId: ID!){
+            updateNamHoc(
                 inputs: $inputs
-                hocPhanId: $hocPhanId
+                namHocId: $namHocId
             ) {
               status
               message
@@ -16,12 +16,7 @@ export default {
                 error_fields
               }
               data {
-                hocPhanId
-                maHocPhan
-                soTinChiLyThuyet
-                getSoTinChiThucHanh
-                moTa
-                batBuoc
+                ${fragment}
               }
             }
           }
