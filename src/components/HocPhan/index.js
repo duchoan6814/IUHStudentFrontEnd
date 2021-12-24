@@ -8,7 +8,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { get, isEmpty } from "lodash";
 
 const getHocPhanQuery = queries.query.getHocPhans(hocPhanFragment);
-const deteleHocPhanMutation = queries.mutation.deleteHocPhan();
+const deteleHocPhanMutation = queries.mutation.deleteHocPhan(hocPhanFragment);
 const HocPhan = () => {
 
     const [visibleModal, setVisibleModal] = useState(false);
