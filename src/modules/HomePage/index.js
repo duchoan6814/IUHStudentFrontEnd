@@ -11,6 +11,7 @@ import HocPhan from "components/HocPhan";
 import LopHocPhan from "components/LopHocPhan";
 import "./HomePage.scss";
 import { isEmpty } from "lodash";
+import { clientCache } from "helpers";
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -53,6 +54,11 @@ const HomePage = () => {
 
   const handleChangeMenu = (e) => {
     const key = e?.key;
+    if(key == "1") {
+      clientCache.removeAuthenTokenWithCookie();
+      window.location.href = `${window.location.origin}/login`;
+      return;
+    }
 
     setCurrentComponent(key);
   };
