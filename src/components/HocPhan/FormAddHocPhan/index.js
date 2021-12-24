@@ -129,6 +129,7 @@ const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => 
         <Form.Item
           name={"maHocPhan"}
           label="Mã học phần"
+          rules={[{ required: true, message: 'Yêu cầu nhập mã học phần!' }]}
         >
           <Input />
         </Form.Item>

@@ -100,6 +100,7 @@ const ModalKhoa = ({ visible, closeModal, type, data, onCreateComplete }) => {
         <Form.Item
           name={"tenKhoaVien"}
           label="Tên khoa viện"
+          rules={[{ required: true, message: 'Yêu cầu nhập tên khoa viện!' }]}
         >
           <Input defaultValue={null} />
         </Form.Item>

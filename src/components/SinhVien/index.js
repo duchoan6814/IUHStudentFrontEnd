@@ -20,13 +20,13 @@ const SinhVienComponent = () => {
 
   const [visibleModal1, setVisibleModal1] = useState(false);
   const [visibleModal, setVisibleModal] = useState(false);
-
   const [sinhVien, setSinhVien] = useState({});
   const [data, setDataSinhVien] = useState([]);
   const [dataKhoa, setDataKhoa] = useState([]);
   const [currentKhoa, setCurrentKhoa] = useState([]);
   const [currentNamVaoTruong, setCurrentNamVaoTruong] = useState([]);
   const [dataNamVaoTruong, setDataNamVaoTruong] = useState([]);
+
 
   const createSinhVienMutation = queries.mutation.createSinhVien();
   const { data: dataGetSinhViens, loading: loadingGetSinhViens } = useQuery(getSinhVienWithKhoaVienIdQuery, {
@@ -222,6 +222,7 @@ const SinhVienComponent = () => {
   ];
 
 
+
   useEffect(() => {
     const _listSinhVien = dataGetSinhViens?.getSinhVienWithKhoaVienId?.data;
     setDataSinhVien(_listSinhVien);
@@ -374,18 +375,6 @@ const SinhVienComponent = () => {
         >
           {dataKhoa?.map((khoaData) => (
             <Option key={khoaData?.khoaVienId}>{khoaData?.tenKhoaVien}</Option>
-          ))}
-        </Select>
-        <span style={{ marginLeft: 30 }}>Năm vào trường</span>
-        <Select
-          className="ant-select-selector"
-          value={currentNamVaoTruong?.namHoc}
-          style={{ width: 300 }}
-          // onChange={handleChangeNamHoc}
-          onSelect={onClickNam}
-        >
-          {dataNamVaoTruong?.map((dataNam, index) => (
-            <Option onClick={onClickNam} key={dataNam?.namHoc}>{dataNam?.namHoc}</Option>
           ))}
         </Select>
       </div>

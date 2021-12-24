@@ -129,12 +129,14 @@ const ModalMonHoc = ({ visible, closeModal, type, data, onCreateComplete }) => {
         <Form.Item
           name={"tenMonHoc"}
           label="Tên môn học"
+          rules={[{ required: true, message: 'Yêu cầu nhập tên môn học!' }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           name={"soTinChiLyThuyet"}
           label="Số tín chỉ lý thuyết"
+          rules={[{ required: true, message: 'Yêu cầu nhập số tín chỉ lý thuyết!' }]}
         >
           <Input />
         </Form.Item>

@@ -116,19 +116,20 @@ const ModalChuyenNganh = ({ visible, closeModal, type, data, onCreateComplete })
         <Form.Item
           name={"tenChuyenNganh"}
           label="Tên chuyên ngành"
+          rules={[{ required: true, message: 'Yêu cầu nhập tên chuyên ngành!' }]}
         >
           <Input value={null} />
+        </Form.Item>
+        <Form.Item
+          label="Khoa"
+        >
+          <Select style={{ width: 290 }} placeholder='Khoa' />
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button type="primary" htmlType="submit">
             {type === 'add' ? "Thêm" : "Sửa"}
           </Button>
         </Form.Item>
-        {/* <Form.Item
-          label="Khoa"
-        >
-           <Select options={khoa} style={{ width: 290 }} placeholder='Khoa' onChange={handleChange} />
-        </Form.Item> */}
       </Form>
     );
   };

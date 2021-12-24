@@ -150,6 +150,7 @@ const ModalAddLopHocPhan = ({ visible, closeModal, type, data, onCompleteAction 
                 <Form.Item
                     name={"maLopHocPhan"}
                     label="Mã lớp học phần"
+                    rules={[{ required: true, message: 'Yêu cầu nhập mã lớp học phần!' }]}
                 >
                     <Input value={null} />
                 </Form.Item>
@@ -169,7 +170,7 @@ const ModalAddLopHocPhan = ({ visible, closeModal, type, data, onCompleteAction 
                     name={"soNhomThucHanh"}
                     label="Số nhóm thực hành"
                 >
-                    <Input value={null} />
+                    <Input type={"number"} />
                 </Form.Item>
                 <Form.Item
                     label="Trạng thái lớp học phần"
@@ -178,14 +179,14 @@ const ModalAddLopHocPhan = ({ visible, closeModal, type, data, onCompleteAction 
                         options={trangThaiLopHocPhan1}
                         style={{ width: 290 }}
                         value={trangThaiLopHocPhan}
-                        placeholder='Loại hình đào tạo'
+                        placeholder='Trạng thái lớp học phần'
                         onChange={(value) => handleChange('trangThaiLopHocPhan', value)} />
                 </Form.Item>
                 <Form.Item
                     name={"soLuongToiDa"}
                     label="Số lượng tối đa"
                 >
-                    <Input />
+                    <Input type={"number"} />
                 </Form.Item>
                 <Form.Item
                     name={"moTa"}
