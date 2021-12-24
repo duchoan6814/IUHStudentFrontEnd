@@ -43,7 +43,7 @@ const SinhVienComponent = () => {
   });
   const [actGetSinhVienWithNam, { data: dataGetSinhViensWithNam, loading: loadingGetSinhViensWithNam }] = useLazyQuery(getSinhVienWithKhoaVienIdAndNgayVaoTruongQuery, {
     onCompleted: (data) => {
-      const _listSinhVien = data?.getSinhVienWithKhoaVienIdAndNgayVaoTruong?.data;
+      const _listSinhVien = data?.getSinhVienWithKhoaVienIdAndNgayVaoTruong?.data || [];
       console.log(_listSinhVien);
       setDataSinhVien(_listSinhVien);
     }
@@ -224,7 +224,7 @@ const SinhVienComponent = () => {
 
 
   useEffect(() => {
-    const _listSinhVien = dataGetSinhViens?.getSinhVienWithKhoaVienId?.data;
+    const _listSinhVien = dataGetSinhViens?.getSinhVienWithKhoaVienId?.data || [];
     setDataSinhVien(_listSinhVien);
   }, [dataGetSinhViens?.getSinhVienWithKhoaVienId?.data]);
 
@@ -251,12 +251,12 @@ const SinhVienComponent = () => {
   }
 
   const handleCreateSinhVien = (e) => {
-    let _data = data;
+    let _data = data || [];
     _data = [e, ..._data];
     setDataSinhVien(_data);
   }
   const handleUpdateSinhVien = (e) => {
-    const _index = data?.findIndex(item => item?.sinhVienId === e?.sinhVienId);
+    const _index = data?.findIndex(item => item?.sinhVienId === e?.sinhVienId) || [];
     setVisibleModal1(false);
     let _data = data;
     _data = [
@@ -289,7 +289,7 @@ const SinhVienComponent = () => {
     if (status === "OK") {
       const _index = data?.findIndex(item => item?.sinhVienId === e?.sinhVienId)
 
-      let _listSinhVien = data;
+      let _listSinhVien = data || [];
       _listSinhVien = [
         ..._listSinhVien.slice(0, _index),
         ..._listSinhVien.slice(_index + 1)
