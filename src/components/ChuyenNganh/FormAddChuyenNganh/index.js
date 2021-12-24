@@ -6,7 +6,7 @@ import queries from 'core/graphql';
 import { useMutation } from "@apollo/client";
 const createChuyenNganh = queries.mutation.createChuyenNganh();
 const updateChuyenNganh = queries.mutation.updateChuyenNganh();
-const ModalChuyenNganh = ({ visible, closeModal, type, data, onCreateComplete }) => {
+const ModalChuyenNganh = ({ visible, closeModal, type, data, onCreateComplete, listKhoa }) => {
   const layout = {
     labelCol: { span: 4 },
     wrapperCol: { span: 24 },
@@ -116,19 +116,20 @@ const ModalChuyenNganh = ({ visible, closeModal, type, data, onCreateComplete })
         <Form.Item
           name={"tenChuyenNganh"}
           label="Tên chuyên ngành"
+          rules={[{ required: true, message: 'Yêu cầu nhập tên chuyên ngành!' }]}
         >
           <Input value={null} />
+        </Form.Item>
+        <Form.Item
+          label="Khoa"
+        >
+          <Select style={{ width: 290 }} placeholder='Khoa' options={listKhoa?.map(item => ({label: item?.tenKhoaVien, value: item?.khoaVienId}))} />
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button type="primary" htmlType="submit">
             {type === 'add' ? "Thêm" : "Sửa"}
           </Button>
         </Form.Item>
-        {/* <Form.Item
-          label="Khoa"
-        >
-           <Select options={khoa} style={{ width: 290 }} placeholder='Khoa' onChange={handleChange} />
-        </Form.Item> */}
       </Form>
     );
   };
