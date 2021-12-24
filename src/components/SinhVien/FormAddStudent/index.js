@@ -9,8 +9,6 @@ import { getKhoafragment } from "components/Khoa/fragment";
 
 const createSinhVienMutation = queries.mutation.createSinhVien();
 const updateSinhVienMutation = queries.mutation.updateSinhVien();
-const { Option, OptGroup } = Select;
-
 
 
 const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => {
@@ -188,7 +186,7 @@ const ModalStudent = ({ visible, closeModal, type, data, onCreateComplete }) => 
           label="MSSV"
           rules={[{ required: true, message: 'Yêu cầu nhập mã sinh viên!' }]}
         >
-          <Input />
+          <Input disabled={type !== "add"} />
         </Form.Item>
         <Form.Item
           name={"maHoSo"}

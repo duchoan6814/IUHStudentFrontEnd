@@ -151,6 +151,7 @@ const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => 
         <Form.Item
           name={"soTinChiLyThuyet"}
           label="Số tín chỉ LT"
+          rules={[{ required: true, message: 'Yêu cầu nhập số tín chỉ!' }]}
         >
           <Input />
         </Form.Item>
