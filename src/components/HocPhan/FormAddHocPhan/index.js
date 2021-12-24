@@ -2,10 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Modal, Form, Input, Select, Button, notification } from "antd";
 import { get, isEmpty } from "lodash";
 import queries from 'core/graphql';
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { hocPhanFragment } from "../fragment";
 const createHocPhan = queries.mutation.createHocPhan(hocPhanFragment);
 const updateHocPhanMutation = queries.mutation.updateHocPhan(hocPhanFragment);
+const getMonHocQuery = queries.query.getMonHocs(`
+monHocId
+tenMonHoc
+`)
 const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => {
   const layout = {
     labelCol: { span: 4 },
@@ -13,6 +17,9 @@ const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => 
   };
   const [hocPhan, setHocPhan] = useState({});
   const [batBuoc, setbatBuoc] = useState();
+
+  const {data: dataGetMonHoc} = useQuery(getMonHocQuery);
+
   const [actCreateKhoaHocPhan, { data: dataCreateHocPhan, loading: loadingCreateHocPhan }] = useMutation(createHocPhan,
     {
       onCompleted: (dataReturn) => {
@@ -148,6 +155,16 @@ const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => 
           label="Mô tả"
         >
           <Input />
+        </Form.Item>
+        <Form.Item label="Tên môn học">
+          <Select
+            style={{ width: 290 }}
+            placeholder="Môn học"
+            options={dataGetMonHoc?.getMonHocs?.data?.map((item) => ({
+              label: item?.tenMonHoc,
+              value: item?.monHocId,
+            }))}
+          />
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button type="primary" htmlType="submit">
