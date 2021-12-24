@@ -3,8 +3,9 @@ import { Modal, Form, Input, Select, Button, notification } from "antd";
 import { get, isEmpty } from "lodash";
 import queries from 'core/graphql';
 import { useMutation } from "@apollo/client";
-const createHocPhan = queries.mutation.createHocPhan();
-const updateHocPhanMutation = queries.mutation.updateHocPhan();
+import { hocPhanFragment } from "../fragment";
+const createHocPhan = queries.mutation.createHocPhan(hocPhanFragment);
+const updateHocPhanMutation = queries.mutation.updateHocPhan(hocPhanFragment);
 const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => {
   const layout = {
     labelCol: { span: 4 },
@@ -72,8 +73,6 @@ const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => 
       variables: {
         inputs: {
           maHocPhan: _dataForm?.maHocPhan,
-          soTinChiLyThuyet: _dataForm?.soTinChiLyThuyet,
-          getSoTinChiThucHanh: _dataForm?.getSoTinChiThucHanh,
           batBuoc: batBuoc,
           moTa: _dataForm?.moTa,
         }
@@ -87,8 +86,6 @@ const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => 
       variables: {
         inputs: {
           maHocPhan: _dataForm?.maHocPhan,
-          soTinChiLyThuyet: _dataForm?.soTinChiLyThuyet,
-          getSoTinChiThucHanh: _dataForm?.getSoTinChiThucHanh,
           batBuoc: batBuoc,
           moTa: _dataForm?.moTa,
         },
@@ -105,9 +102,6 @@ const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => 
     form.setFieldsValue({
       hocPhanId: data.hocPhanId,
       maHocPhan: data.maHocPhan,
-      soTinChiLyThuyet: data.soTinChiLyThuyet,
-      getSoTinChiThucHanh: data.getSoTinChiThucHanh,
-      // batBuoc: data.batBuoc,
       moTa: data.moTa,
     })
     setbatBuoc(data.batBuoc);
@@ -139,18 +133,6 @@ const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => 
           <Input />
         </Form.Item>
         <Form.Item
-          name={"soTinChiLyThuyet"}
-          label="Số tín chỉ LT"
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name={"getSoTinChiThucHanh"}
-          label="Số tín chỉ TH"
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
           name={"batBuoc"}
           label="Học phần bắt buộc"
         >
@@ -158,7 +140,6 @@ const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => 
             options={hocPhanBatBuoc1}
             style={{ width: 290 }}
             value={type === "add" ? "" : (batBuoc ? "Bắt buộc" : "Không bắt buộc")}
-            // placeholder='Trạng thái'
             onChange={(value) => handleChange('batBuoc', value)} />
         </Form.Item>
         <Form.Item

@@ -31,7 +31,18 @@ const MonHoc = () => {
             key: 'tenMonHoc',
             width: 400,
         },
-
+        {
+            title: 'Số tín chỉ LT',
+            dataIndex: 'soTinChiLyThuyet',
+            key: 'soTinChiLyThuyet',
+            width: 300,
+        },
+        {
+            title: 'Số tín chỉ TH',
+            dataIndex: 'soTinChiThucHanh',
+            key: 'soTinChiThucHanh',
+            width: 300,
+        },
         {
             title: 'Mô tả',
             dataIndex: 'moTa',

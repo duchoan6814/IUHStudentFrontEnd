@@ -33,18 +33,6 @@ const HocPhan = () => {
             width: 200,
         },
         {
-            title: 'Số tín chỉ LT',
-            dataIndex: 'soTinChiLyThuyet',
-            key: 'soTinChiLyThuyet',
-            width: 300,
-        },
-        {
-            title: 'Số tín chỉ TH',
-            dataIndex: 'getSoTinChiThucHanh',
-            key: 'getSoTinChiThucHanh',
-            width: 300,
-        },
-        {
             title: 'Học phần bắt buộc',
             dataIndex: 'batBuoc',
             key: 'batBuoc',
