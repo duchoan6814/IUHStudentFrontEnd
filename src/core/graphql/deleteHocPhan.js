@@ -13,12 +13,7 @@ export default {
                   error_fields
                 }
                 data {
-                    hocPhanId
-                    maHocPhan
-                    soTinChiLyThuyet
-                    getSoTinChiThucHanh
-                    moTa
-                    batBuoc
+                    ${fragment}
                 }
               }
         }

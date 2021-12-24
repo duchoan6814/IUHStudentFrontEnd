@@ -91,7 +91,7 @@ const HomePage = () => {
               <Menu.Item key="6">Khoa</Menu.Item>
               <Menu.Item key="7">Chuyên Ngành</Menu.Item>
               <Menu.Item key="8">Môn Học</Menu.Item>
-              <Menu.Item key="9">Học Kỳ</Menu.Item>
+              <Menu.Item key="9">Năm Học</Menu.Item>
               <Menu.Item key="10">Học Phần</Menu.Item>
               <Menu.Item key="11">Lớp Học Phần</Menu.Item>
             </SubMenu>
