@@ -149,7 +149,6 @@ const ModalAddLopHocPhan = ({
     if (type === "trangThaiLopHocPhan") {
       setTrangThaiLopHocPhan(value);
     }
-<<<<<<< HEAD
   }
   const trangThaiLopHocPhan1 = [
     { value: "DANG_LEN_KE_HOACH", label: "DANG_LEN_KE_HOACH" },
@@ -159,81 +158,6 @@ const ModalAddLopHocPhan = ({
     { value: "DA_KHOA", label: "DA_KHOA" },
   ];
   const renderForm = () => {
-=======
-    const trangThaiLopHocPhan1 = [
-        { value: 'DANG_LEN_KE_HOACH', label: 'DANG_LEN_KE_HOACH' },
-        { value: 'CHO_SINH_VIEN_DANG_KY', label: 'CHO_SINH_VIEN_DANG_KY' },
-        { value: 'CHAP_NHAN_MO_LOP', label: 'CHAP_NHAN_MO_LOP' },
-        { value: 'HUY_LOP_HOC_PHAN', label: 'HUY_LOP_HOC_PHAN' },
-        { value: 'DA_KHOA', label: 'DA_KHOA' },
-    ]
-    const renderForm = () => {
-        return (
-
-            <Form {...layout} onFinish={type === 'add' ? handleAddLop : handleEditLop} form={form} name="nest-messages">
-                <Form.Item
-                    name={"lopHocPhanId"}
-                    label="Lop ID"
-                >
-                    <Input disabled />
-                </Form.Item>
-                <Form.Item
-                    name={"maLopHocPhan"}
-                    label="Mã lớp học phần"
-                    rules={[{ required: true, message: 'Yêu cầu nhập mã lớp học phần!' }]}
-                >
-                    <Input value={null} />
-                </Form.Item>
-                <Form.Item
-                    name={"tenVietTat"}
-                    label="Tên viết tắt"
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item
-                    name={"tenLopHocPhan"}
-                    label="Tên lớp học phần"
-                    rules={[{ required: true, message: 'Yêu cầu nhập tên lớp học phần!' }]}
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item
-                    name={"soNhomThucHanh"}
-                    label="Số nhóm thực hành"
-                >
-                    <Input type={"number"} value={null} />
-                </Form.Item>
-                <Form.Item
-                    label="Trạng thái lớp học phần"
-                >
-                    <Select
-                        options={trangThaiLopHocPhan1}
-                        style={{ width: 290 }}
-                        value={trangThaiLopHocPhan}
-                        placeholder='Loại hình đào tạo'
-                        onChange={(value) => handleChange('trangThaiLopHocPhan', value)} />
-                </Form.Item>
-                <Form.Item
-                    name={"soLuongToiDa"}
-                    label="Số lượng tối đa"
-                >
-                    <Input type={"number"} />
-                </Form.Item>
-                <Form.Item
-                    name={"moTa"}
-                    label="Mô tả"
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-                    <Button type="primary" htmlType="submit">
-                        {type === 'add' ? "Thêm" : "Sửa"}
-                    </Button>
-                </Form.Item>
-            </Form>
-        );
-    };
->>>>>>> f9d6dbb ( change required form Lop Hoc Phan)
     return (
       <Form
         {...layout}
