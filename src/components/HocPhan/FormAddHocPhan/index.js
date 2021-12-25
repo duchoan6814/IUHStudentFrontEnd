@@ -9,7 +9,8 @@ const updateHocPhanMutation = queries.mutation.updateHocPhan(hocPhanFragment);
 const getMonHocQuery = queries.query.getMonHocs(`
 monHocId
 tenMonHoc
-`)
+`);
+
 const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => {
   const layout = {
     labelCol: { span: 4 },
@@ -18,7 +19,7 @@ const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => 
   const [hocPhan, setHocPhan] = useState({});
   const [batBuoc, setbatBuoc] = useState();
 
-  const {data: dataGetMonHoc} = useQuery(getMonHocQuery);
+  const { data: dataGetMonHoc } = useQuery(getMonHocQuery);
 
   const [actCreateKhoaHocPhan, { data: dataCreateHocPhan, loading: loadingCreateHocPhan }] = useMutation(createHocPhan,
     {
@@ -80,6 +81,8 @@ const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => 
       variables: {
         inputs: {
           maHocPhan: _dataForm?.maHocPhan,
+          soTinChiLyThuyet: _dataForm?.soTinChiLyThuyet,
+          getSoTinChiThucHanh: _dataForm?.getSoTinChiThucHanh,
           batBuoc: batBuoc,
           moTa: _dataForm?.moTa,
         }
@@ -93,6 +96,8 @@ const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => 
       variables: {
         inputs: {
           maHocPhan: _dataForm?.maHocPhan,
+          soTinChiLyThuyet: _dataForm?.soTinChiLyThuyet,
+          getSoTinChiThucHanh: _dataForm?.getSoTinChiThucHanh,
           batBuoc: batBuoc,
           moTa: _dataForm?.moTa,
         },
@@ -109,6 +114,9 @@ const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => 
     form.setFieldsValue({
       hocPhanId: data.hocPhanId,
       maHocPhan: data.maHocPhan,
+      soTinChiLyThuyet: data.soTinChiLyThuyet,
+      getSoTinChiThucHanh: data.getSoTinChiThucHanh,
+      // batBuoc: data.batBuoc,
       moTa: data.moTa,
     })
     setbatBuoc(data.batBuoc);
@@ -141,6 +149,19 @@ const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => 
           <Input />
         </Form.Item>
         <Form.Item
+          name={"soTinChiLyThuyet"}
+          label="Số tín chỉ LT"
+          rules={[{ required: true, message: 'Yêu cầu nhập số tín chỉ!' }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name={"getSoTinChiThucHanh"}
+          label="Số tín chỉ TH"
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
           name={"batBuoc"}
           label="Học phần bắt buộc"
         >
@@ -148,6 +169,7 @@ const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => 
             options={hocPhanBatBuoc1}
             style={{ width: 290 }}
             value={type === "add" ? "" : (batBuoc ? "Bắt buộc" : "Không bắt buộc")}
+            // placeholder='Trạng thái'
             onChange={(value) => handleChange('batBuoc', value)} />
         </Form.Item>
         <Form.Item

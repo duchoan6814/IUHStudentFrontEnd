@@ -12,7 +12,9 @@ export default {
                  error_fields
                }
                data{
-                ${fragment}
+                monHocId
+                tenMonHoc
+                moTa
                }
              }
         }

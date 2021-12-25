@@ -29,7 +29,7 @@ const ModalAddLopHocPhan = ({
   };
   const [trangThaiLopHocPhan, setTrangThaiLopHocPhan] = useState();
 
-  const {data: dataGetHocPhan, loading: loadingGetHocPhan} = useQuery(getHocPhanQuery);
+  const { data: dataGetHocPhan, loading: loadingGetHocPhan } = useQuery(getHocPhanQuery);
 
   const [
     actCreateLopHocPhan,
@@ -178,7 +178,9 @@ const ModalAddLopHocPhan = ({
         <Form.Item name={"tenVietTat"} label="Tên viết tắt">
           <Input value={null} />
         </Form.Item>
-        <Form.Item name={"tenLopHocPhan"} label="Tên lớp học phần">
+        <Form.Item
+          rules={[{ required: true, message: 'Yêu cầu nhập tên lớp học phần!' }]}
+          name={"tenLopHocPhan"} label="Tên lớp học phần">
           <Input value={null} />
         </Form.Item>
         <Form.Item name={"soNhomThucHanh"} label="Số nhóm thực hành">
