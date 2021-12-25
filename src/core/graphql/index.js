@@ -34,6 +34,10 @@ import getHocPhans from "./getHocPhans";
 import createHocPhan from "./createHocPhan";
 import updateHocPhan from "./updateHocPhan";
 import deleteHocPhan from "./deleteHocPhan";
+import getNamHoc from "./getNamHoc";
+import createNamHoc from "./createNamHoc";
+import deleteNamHoc from "./deleteNamHoc";
+import updateNamHoc from "./updateNamHoc";
 const query = {
   ...Login.query,
   ...GetProfile.query,
@@ -49,6 +53,7 @@ const query = {
   ...getChuyenNganhWithKhoaVienId.query,
   ...getLopHocPhans.query,
   ...getHocPhans.query,
+  ...getNamHoc.query,
 };
 
 const mutation = {
@@ -73,6 +78,9 @@ const mutation = {
   ...createHocPhan.mutation,
   ...updateHocPhan.mutation,
   ...deleteHocPhan.mutation,
+  ...createNamHoc.mutation,
+  ...deleteNamHoc.mutation,
+  ...updateNamHoc.mutation,
 };
 
 export default {

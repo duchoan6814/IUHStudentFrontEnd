@@ -3,40 +3,57 @@ import { Button, notification, Table, Input, Popconfirm, Form } from 'antd';
 import './index.scss'
 import ModalHocKy from './FormAddNamHoc';
 import queries from 'core/graphql';
-import { getHocKysFragment } from './fragment';
+import { getHocKysFragment } from './fragment.HocKy';
 import { useMutation, useQuery } from '@apollo/client';
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, set, slice } from 'lodash';
+import { getNamHocFragment } from './fragment.NamHoc';
 
 
 
-
+const getNamHocQuery = queries.query.getNamHoc(getNamHocFragment);
 const getHocKysQuery = queries.query.getHocKys(getHocKysFragment);
-const deteleHocKyMutation = queries.mutation.deleteHocKy();
-const HocKy = () => {
+const deteleNamHocMutation = queries.mutation.deleteNamHoc();
+const createHocKyMutation = queries.mutation.createHocKy(getHocKysFragment);
+const NamHoc = () => {
+    const layout = {
+        labelCol: { span: 4 },
+        wrapperCol: { span: 24 },
+    };
+    const [form] = Form.useForm();
+
     const [visibleModal, setVisibleModal] = useState(false);
     const [visibleModalSua, setVisibleModalSua] = useState(false);
     const [hocKy, setHocKy] = useState({});
     const [dataHocKy, setDataHocKy] = useState([]);
-    const [count, setCount] = useState(2)
+    const [inputText, setinputText] = useState(false);
+    const [dataNamHoc, setDataNamHoc] = useState([]);
+
+
     const { data: dataGetHocKys, loading: loadingGetHocKy } = useQuery(getHocKysQuery);
-    const [actDeteleHoKy, { data: dataDeleteHocKy, loading: loadingDeleteHocKy }] = useMutation(deteleHocKyMutation);
+    const { data: dataGetNamHoc, loading: loadingGetNamHoc } = useQuery(getNamHocQuery);
+    const [actDeteleNamHoc, { data: dataDeleteNamHoc, loading: loadingDeleteNamHoc }] = useMutation(deteleNamHocMutation);
+    const [actCreateHocKy, { data: dataCreateHocKy, loading: loadingCreateHocKy }] = useMutation(createHocKyMutation, {
+        onCompleted: (dataReturn) => {
+
+        }
+    });
     const columns = [
         {
             title: 'Mã năm học',
-            dataIndex: 'nam_hoc_id',
-            key: 'nam_hoc_id',
+            dataIndex: 'namHocId',
+            key: 'namHocId',
             width: 200,
         },
         {
             title: 'Ngày bắt đầu ',
-            dataIndex: 'namBatDau',
-            key: 'namBatDau',
+            dataIndex: 'startDate',
+            key: 'startDate',
             width: 400,
         },
         {
             title: 'Ngày kết thúc',
-            dataIndex: 'namKetThuc',
-            key: 'namKetThuc',
+            dataIndex: 'endDate',
+            key: 'endDate',
             width: 400,
         },
         {
@@ -51,63 +68,39 @@ const HocKy = () => {
         },
     ];
 
-    const data = [
-        {
-            key: 1,
-            nam_hoc_id: 'John Brown',
-            namBatDau: 32,
-            namKetThuc: 'New York No. 1 Lake Park',
-            description: 'My name is John Brown, I am 32 years old, living in New York No. 1 Lake Park.',
-        },
-        {
-            key: 2,
-            nam_hoc_id: 'John Brown',
-            namBatDau: 32,
-            namKetThuc: 'New York No. 1 Lake Park',
-            description: 'My name is John Brown, I am 32 years old, living in New York No. 1 Lake Park.',
-        },
-        {
-            key: 3,
-            name: 'Not Expandable',
-            age: 29,
-            address: 'Jiangsu No. 1 Lake Park',
-            description: 'This not expandable',
-        },
-        {
-            key: 4,
-            name: 'Joe Black',
-            age: 32,
-            address: 'Sidney No. 1 Lake Park',
-            description: 'My name is Joe Black, I am 32 years old, living in Sidney No. 1 Lake Park.',
-        },
-    ];
+
+    useEffect(() => {
+        const _dataNamHoc = dataGetNamHoc?.getNamHoc?.data;
+        setDataNamHoc(_dataNamHoc);
+
+    }, [dataGetNamHoc])
     useEffect(() => {
         const _listHocKy = dataGetHocKys?.getHocKys?.data;
         setDataHocKy(_listHocKy);
     }, [dataGetHocKys])
     const handlerDeteleButton = async (e) => {
-        const _dataReutrn = await actDeteleHoKy({
+        const _dataReutrn = await actDeteleNamHoc({
             variables: {
-                hocKyId: e?.hocKyId,
+                namHocId: e?.namHocId,
             }
         })
         const dataReturn = get(_dataReutrn, "data", {});
-        const errors = get(_dataReutrn, "deleteHocKy.errors", []);
+        const errors = get(_dataReutrn, "deleteNamHoc.errors", []);
         if (!isEmpty(errors)) {
             errors?.map(item => console.log(item.message));
             return;
         }
-        const status = get(dataReturn, 'deleteHocKy.status', "");
+        const status = get(dataReturn, 'deleteNamHoc.status', "");
         if (status === "OK") {
-            const _index = dataHocKy?.findIndex(item => item?.hocKyId === e?.hocKyId)
+            const _index = dataNamHoc?.findIndex(item => item?.namHocId === e?.namHocId)
 
-            let _listHocKy = dataHocKy;
-            _listHocKy = [
-                ..._listHocKy.slice(0, _index),
-                ..._listHocKy.slice(_index + 1)
+            let _listNamHoc = dataNamHoc;
+            _listNamHoc = [
+                ..._listNamHoc.slice(0, _index),
+                ..._listNamHoc.slice(_index + 1)
             ];
 
-            setDataHocKy(_listHocKy);
+            setDataNamHoc(_listNamHoc);
 
             return;
         }
@@ -116,59 +109,175 @@ const HocKy = () => {
         setHocKy(hocKy);
         setVisibleModalSua(true);
     }
-    const handlerCreateButton = (e) => {
+    const handlerCreateButtonNamHoc = (e) => {
         setVisibleModal(false);
-        let _list = dataHocKy;
+        let _list = dataNamHoc;
         _list = [e, ..._list];
-        setDataHocKy(_list);
+        setDataNamHoc(_list);
     }
+
     const handlerUpdateButton = (e) => {
         setVisibleModalSua(false);
-        let _list = dataHocKy;
-        const _index = dataHocKy.findIndex(item => item?.hocKyId === e?.hocKyId);
+        let _list = dataNamHoc;
+        const _index = dataNamHoc?.findIndex(item => item?.namHocId === e?.namHocId);
         _list = [
             ..._list.slice(0, _index),
             { ..._list?.[_index], ...e },
             ..._list.slice(_index + 1),
         ];
-        setDataHocKy(_list);
+        setDataNamHoc(_list);
+    }
+    const handlAdd = () => {
+        setinputText(!inputText);
+    }
+    // console.log("nam hoc id", dataNamHoc.namHocId[1]);
+    const handlAddHocKy = async (listHocKy, namHocId) => {
+        console.log("namHocId", namHocId);
+        const _dataForm = form.getFieldsValue(true);
+        console.log("Số thứ tự", _dataForm?.moTa);
+        const _dataReutrn = await actCreateHocKy({
+            variables: {
+                inputs: {
+                    soThuTu: _dataForm?.soThuTu,
+                    moTa: _dataForm?.moTa,
+                    maNamHoc: namHocId,
+                }
+            }
+        })
+        const errors = get(_dataReutrn, 'createHocKy.errors', []);
+        if (!isEmpty(errors)) {
+            return errors.map(item =>
+                notification["error"]({
+                    message: item?.message,
+                })
+            )
+        }
+
+        const _data = get(_dataReutrn, 'data.createHocKy.data', {});
+
+        const status = get(_dataReutrn, 'data.createHocKy.status', {})
+
+        setinputText(!inputText);
+
+
+        if (!isEmpty(_data)) {
+
+
+
+            let _list = listHocKy;
+            _list = [_data, ..._list];
+
+            setDataHocKy(_list);
+            const _indexNamHoc = dataNamHoc?.findIndex(item => item?.namHocId === namHocId);
+
+            let _dataNamHoc = dataNamHoc;
+
+            _dataNamHoc = [..._dataNamHoc?.slice(0, _indexNamHoc), {
+                ..._dataNamHoc?.[_indexNamHoc],
+                hocKy: _list
+            }, ..._dataNamHoc?.slice(_indexNamHoc + 1)]
+
+
+            setDataNamHoc(_dataNamHoc);
+
+            notification.open({
+                message: 'Thông báo',
+                description: status,
+            })
+            return;
+        }
+
+
     }
 
     return (<div className='hocKy'>
         <h1>DANH SÁCH NĂM HỌC</h1>
         <Button className='ant-btn-primary' type="primary" onClick={() => setVisibleModal(true)}>+ Thêm năm học</Button>
-
         <Table
-            columns={columns}
-            // expandable={{
-            //     expandedRowRender: record => <Table
-            //         // components={components}
-            //         rowClassName={() => 'editable-row'}
-            //         bordered
-            //     // dataSource={dataSource}
-            //     // columns={columnsTableChild}
-            //     />,
-            //     rowExpandable: record => record.name !== 'Not Expandable',
-            // }}
-            dataSource={data}
-            scroll={{ x: 1500, y: "50vh" }}
-        />
-        <Table
+            className="components-table-demo-nested"
             columns={columns}
             expandable={{
-                expandedRowRender: record => <p style={{ margin: 0 }}>{record.description}</p>,
-                rowExpandable: record => record.name !== 'Not Expandable',
+                expandedRowRender: (dataNamHoc) => {
+                    console.log("data", dataNamHoc);
+                    const _hocKys = dataNamHoc?.hocKy;
+
+                    return (
+                        <div>
+                            <table>
+                                <tr>
+                                    <td> Học kỳ id </td>
+                                    <td> Số thứ tự  </td>
+                                    <td> Mô tả  </td>
+                                    <td>
+                                        <Button className='ant-btn-primary' type="primary" onClick={handlAdd} >Thêm học kỳ</Button>
+                                    </td>
+                                </tr>
+
+                                <tr style={{ display: (inputText === true ? "flex" : "none") }}>
+
+                                    <td>
+                                        <Form {...layout}
+                                            form={form}
+                                            onFinish={() => handlAddHocKy(_hocKys, dataNamHoc?.namHocId)}
+                                            name="nest-messages"
+                                        >
+                                            <td>
+
+                                                <Form.Item
+                                                    name={"soThuTu"}
+                                                >
+                                                    <Input placeholder="Số thứ tự" />
+                                                </Form.Item>
+                                            </td>
+                                            <td>
+                                                <Form.Item
+                                                    name={"moTa"}
+                                                >
+                                                    <Input placeholder="Mô tả" />
+                                                </Form.Item>
+                                            </td>
+                                            <td>
+                                                <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                                                    <Button type="primary" htmlType="submit">
+                                                        Thêm
+                                                    </Button>
+                                                </Form.Item>
+                                            </td>
+                                        </Form>
+                                    </td>
+                                </tr>
+                                <>
+                                    {
+                                        _hocKys?.map(item => {
+                                            return (
+                                                <tr>
+                                                    <td>{item?.hocKyId} </td>
+                                                    <td>{item?.soThuTu}</td>
+                                                    <td>{item?.moTa}</td>
+                                                    <td>
+                                                        <Button className='ant-btn-primary' type="primary" >Xóa</Button>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })
+                                    }
+
+                                </>
+                            </table>
+                        </div>
+                    )
+                },
             }}
-            dataSource={data}
+            dataSource={dataNamHoc}
             scroll={{ x: 1500, y: "50vh" }}
         />
-        <ModalHocKy
+        < ModalHocKy
             type="add"
             visible={visibleModal}
             closeModal={setVisibleModal}
-            onCreateComplete={(e) => handlerCreateButton(e)}
+            onCreateComplete={(e) => handlerCreateButtonNamHoc(e)}
         />
-        <ModalHocKy
+        < ModalHocKy
             type="sua"
             visible={visibleModalSua}
             closeModal={setVisibleModalSua}
@@ -177,7 +286,7 @@ const HocKy = () => {
             }
             onCreateComplete={(e) => handlerUpdateButton(e)}
         />
-    </div>);
+    </div >);
 }
 
-export default HocKy;
+export default NamHoc;

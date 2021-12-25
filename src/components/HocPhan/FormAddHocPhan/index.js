@@ -18,7 +18,7 @@ const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => 
   const [hocPhan, setHocPhan] = useState({});
   const [batBuoc, setbatBuoc] = useState();
 
-  const {data: dataGetMonHoc} = useQuery(getMonHocQuery);
+  const { data: dataGetMonHoc } = useQuery(getMonHocQuery);
 
   const [actCreateKhoaHocPhan, { data: dataCreateHocPhan, loading: loadingCreateHocPhan }] = useMutation(createHocPhan,
     {
@@ -140,6 +140,19 @@ const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => 
         >
           <Input />
         </Form.Item>
+        {/* <Form.Item
+          name={"soTinChiLyThuyet"}
+          label="Số tín chỉ LT"
+          rules={[{ required: true, message: 'Yêu cầu nhập số tín chỉ!' }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name={"getSoTinChiThucHanh"}
+          label="Số tín chỉ TH"
+        >
+          <Input />
+        </Form.Item> */}
         <Form.Item
           name={"batBuoc"}
           label="Học phần bắt buộc"

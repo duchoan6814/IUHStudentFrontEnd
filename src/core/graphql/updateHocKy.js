@@ -2,8 +2,8 @@
 import { gql } from "@apollo/client";
 
 export default {
-    mutation: {
-        updateHocKy: (fragment) => gql`
+  mutation: {
+    updateNamHoc: (fragment) => gql`
         mutation UPDATE_HOCKY($inputs: HocKyInput!, $maHocKy: ID!){
             updateHocKy(
                 inputs: $inputs
@@ -24,5 +24,5 @@ export default {
             }
           }
         `
-    }
+  }
 }
