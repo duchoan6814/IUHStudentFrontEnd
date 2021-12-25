@@ -4,9 +4,12 @@ import queries from 'core/graphql';
 import { get, isEmpty } from "lodash";
 import moment from "moment";
 import { useMutation } from "@apollo/client";
+import { createNamHocFragment } from "../fragment.CreateNamHoc";
+import { getNamHocFragment } from "../fragment.NamHoc";
 
-const createHocKyMutation = queries.mutation.createHocKy();
-const updateHocKyMutation = queries.mutation.updateHocKy();
+const createNamHocMutation = queries.mutation.createNamHoc(getNamHocFragment);
+
+const updateNamHocMutation = queries.mutation.updateNamHoc(getNamHocFragment);
 const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
   const layout = {
     labelCol: { span: 4 },
@@ -15,9 +18,9 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
   const [form] = Form.useForm();
   const [namBatDau, setnambatDau] = useState();
   const [namKetThuc, setnamketThuc] = useState();
-  const [actCreateHocKy, { data: dataCreateHocKy, loading: loadingCreateHocKy }] = useMutation(createHocKyMutation, {
+  const [actCreateNamHocMutation, { data: dataCreateNamHoc, loading: loadingCreateNamHoc }] = useMutation(createNamHocMutation, {
     onCompleted: (dataReturn) => {
-      const errors = get(dataReturn, 'createHocKy.errors', []);
+      const errors = get(dataReturn, 'createNamHoc.errors', []);
       if (!isEmpty(errors)) {
         return errors.map(item =>
           notification["error"]({
@@ -26,9 +29,9 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
         )
       }
 
-      const _data = get(dataReturn, 'createHocKy.data', {});
+      const _data = get(dataReturn, 'createNamHoc.data', {});
 
-      const status = get(dataReturn, 'createHocKy.status', {})
+      const status = get(dataReturn, 'createNamHoc.status', {})
       if (!isEmpty(_data)) {
         onCreateComplete(_data);
         notification.open({
@@ -43,9 +46,9 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
       })
     }
   });
-  const [actUpdatehocKy, { data: dataUpdateHocKy, loading: loadingUpdateHocKy }] = useMutation(updateHocKyMutation, {
+  const [actUpdateNanHoc, { data: dataUpdateNamHoc, loading: loadingUpdateNamHoc }] = useMutation(updateNamHocMutation, {
     onCompleted: (dataReturn) => {
-      const errors = get(dataReturn, 'updateHocKy.errors', []);
+      const errors = get(dataReturn, 'updateNamHoc.errors', []);
       if (!isEmpty(errors)) {
         return errors.map(item =>
           notification["error"]({
@@ -54,9 +57,9 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
         )
       }
 
-      const _data = get(dataReturn, 'updateHocKy.data', {});
+      const _data = get(dataReturn, 'updateNamHoc.data', {});
 
-      const status = get(dataReturn, 'updateHocKy.status', {})
+      const status = get(dataReturn, 'updateNamHoc.status', {})
       if (!isEmpty(_data)) {
         onCreateComplete(_data);
         notification.open({
@@ -76,12 +79,12 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
       return;
     }
     form.setFieldsValue({
-      hocKyId: data?.hocKyId,
-      moTa: data?.moTa,
-      namBatDau: type === 'add' ? null : moment(data?.namBatDau),
-      namKetThuc: type === 'add' ? null : moment(data?.namKetThuc)
+      namHocId: data?.namHocId,
+      startDate: type === 'add' ? null : moment(data?.startDate),
+      endDate: type === 'add' ? null : moment(data?.endDate)
     });
-
+    setnambatDau(data?.startDate);
+    setnamketThuc(data?.endDate);
   }, [data])
   const onChangeStart = (date, dateString) => {
     setnambatDau(dateString);
@@ -98,29 +101,24 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
         name="nest-messages"
       >
         <Form.Item
-          name={"hocKyId"}
+          name={"namHocId"}
           label="Mã năm học"
         >
           <Input disabled />
         </Form.Item>
         <Form.Item
-          name={"namBatDau"}
+          name={"startDate"}
           label="Năm học bắt đầu"
         >
-          <DatePicker onChange={onChangeStart} picker="year" placeholder='Năm học bắt đầu' />
+          <DatePicker onChange={onChangeStart} placeholder='Năm học bắt đầu' />
         </Form.Item>
         <Form.Item
-          name={"namKetThuc"}
+          name={"endDate"}
           label="Năm học kết thúc"
         >
-          <DatePicker onChange={onChangeEnd} picker="year" placeholder='Năm học kết thúc' />
+          <DatePicker onChange={onChangeEnd} placeholder='Năm học kết thúc' />
         </Form.Item>
-        <Form.Item
-          name={"moTa"}
-          label="Mô tả"
-        >
-          <Input />
-        </Form.Item>
+
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button type="primary" htmlType="submit">
             {type === 'add' ? "Thêm" : "Sửa"}
@@ -130,27 +128,24 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
     );
   };
   const handleAddHocKy = () => {
-    const _dataForm = form.getFieldsValue(true);
-    actCreateHocKy({
+    actCreateNamHocMutation({
       variables: {
-        inputs: {
-          namBatDau: namBatDau,
-          namKetThuc: namKetThuc,
-          moTa: _dataForm?.moTa,
+        intputs: {
+          startDate: namBatDau,
+          endDate: namKetThuc,
         }
       }
     })
   }
   const handleUpdateHocKy = () => {
     const _dataForm = form.getFieldsValue(true);
-    actUpdatehocKy({
+    actUpdateNanHoc({
       variables: {
         inputs: {
-          namBatDau: namBatDau,
-          namKetThuc: namKetThuc,
-          moTa: _dataForm?.moTa,
+          startDate: namBatDau,
+          endDate: namKetThuc,
         },
-        maHocKy: _dataForm?.hocKyId,
+        namHocId: _dataForm?.namHocId,
       }
     })
   }
@@ -162,7 +157,7 @@ const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
       onCancel={() => closeModal(false)}
       width={1000}
       footer={null}
-      confirmLoading={loadingCreateHocKy || loadingUpdateHocKy}
+      confirmLoading={loadingCreateNamHoc || loadingUpdateNamHoc}
     >
       {renderForm()}
     </Modal>

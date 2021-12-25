@@ -12,10 +12,7 @@ export default {
                  error_fields
                }
                data{
-                hocKyId
-                namBatDau
-                namKetThuc
-                moTa
+                ${fragment}
                }
              }
         }
