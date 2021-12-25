@@ -140,7 +140,7 @@ const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => 
         >
           <Input />
         </Form.Item>
-        <Form.Item
+        {/* <Form.Item
           name={"soTinChiLyThuyet"}
           label="Số tín chỉ LT"
           rules={[{ required: true, message: 'Yêu cầu nhập số tín chỉ!' }]}
@@ -152,7 +152,7 @@ const ModalHocPhan = ({ visible, closeModal, type, data, onCreateComplete }) => 
           label="Số tín chỉ TH"
         >
           <Input />
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item
           name={"batBuoc"}
           label="Học phần bắt buộc"

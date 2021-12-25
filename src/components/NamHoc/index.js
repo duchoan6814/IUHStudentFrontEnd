@@ -5,7 +5,7 @@ import ModalHocKy from './FormAddNamHoc';
 import queries from 'core/graphql';
 import { getHocKysFragment } from './fragment.HocKy';
 import { useMutation, useQuery } from '@apollo/client';
-import { get, isEmpty, slice } from 'lodash';
+import { get, isEmpty, set, slice } from 'lodash';
 import { getNamHocFragment } from './fragment.NamHoc';
 
 
@@ -159,14 +159,15 @@ const NamHoc = () => {
 
         setinputText(!inputText);
 
-        console.log(_data);
 
         if (!isEmpty(_data)) {
 
+
+
             let _list = listHocKy;
-            _list = [_dataReutrn?.createHocKy?.data, ..._list];
+            _list = [_data, ..._list];
 
-
+            setDataHocKy(_list);
             const _indexNamHoc = dataNamHoc?.findIndex(item => item?.namHocId === namHocId);
 
             let _dataNamHoc = dataNamHoc;

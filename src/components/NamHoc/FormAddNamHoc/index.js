@@ -4,7 +4,7 @@ import queries from 'core/graphql';
 import { get, isEmpty } from "lodash";
 import moment from "moment";
 import { useMutation } from "@apollo/client";
-import { createNamHocFragment } from "../fragment.CreateNamHoc";
+// import { createNamHocFragment } from "../fragment.CreateNamHoc";
 import { getNamHocFragment } from "../fragment.NamHoc";
 
 const createNamHocMutation = queries.mutation.createNamHoc(getNamHocFragment);
