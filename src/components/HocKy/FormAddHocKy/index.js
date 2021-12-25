@@ -6,7 +6,7 @@ import moment from "moment";
 import { useMutation } from "@apollo/client";
 
 const createHocKyMutation = queries.mutation.createHocKy();
-const updateHocKyMutation = queries.mutation.updateHocKy();
+const updateHocKyMutation = queries.mutation.updateNamHoc();
 const ModalHocKy = ({ visible, closeModal, type, data, onCreateComplete }) => {
   const layout = {
     labelCol: { span: 4 },

@@ -6,7 +6,7 @@ import SinhVienComponent from "components/SinhVien";
 import KhoaComponent from "components/Khoa";
 import ChuyenNganh from "components/ChuyenNganh";
 import MonHoc from "components/MonHoc";
-import HocKy from "components/HocKy";
+import NamHoc from "components/NamHoc";
 import HocPhan from "components/HocPhan";
 import LopHocPhan from "components/LopHocPhan";
 import "./HomePage.scss";
@@ -37,7 +37,7 @@ const listComponent = [
   },
   {
     key: "9",
-    component: HocKy,
+    component: NamHoc,
   },
   {
     key: "10",

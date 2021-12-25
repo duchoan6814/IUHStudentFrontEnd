@@ -377,6 +377,7 @@ const SinhVienComponent = () => {
             <Option key={khoaData?.khoaVienId}>{khoaData?.tenKhoaVien}</Option>
           ))}
         </Select>
+
       </div>
       <Button
         onClick={() => setVisibleModal(true)}
