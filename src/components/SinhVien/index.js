@@ -251,6 +251,7 @@ const SinhVienComponent = () => {
   }
 
   const handleCreateSinhVien = (e) => {
+    setVisibleModal1(false);
     let _data = data || [];
     _data = [e, ..._data];
     setDataSinhVien(_data);
